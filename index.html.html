@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>恋与深空芯核筛选器 V0.6</title>
+<style>
+:root{
+  --blue:#2f80ed;--blue2:#102a43;--orange:#ff9f43;--bg:#f5f8fc;
+  --line:#d8e2ef;--text:#1f2933;--muted:#667085;
+  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--purple:#8b5cf6;
+  --shadow:0 12px 28px rgba(16,42,67,.12);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(47,128,237,.18),transparent 28%),
+    radial-gradient(circle at top right,rgba(255,159,67,.2),transparent 30%),
+    var(--bg);
+  color:var(--text);
+}
+.wrap{max-width:1180px;margin:auto;padding:26px 14px 48px}
+.hero{
+  background:linear-gradient(135deg,var(--blue2),var(--blue));
+  color:white;border-radius:28px;padding:28px;box-shadow:var(--shadow);
+  position:relative;overflow:hidden;margin-bottom:18px;
+}
+.hero:after{
+  content:"";position:absolute;right:-60px;top:-70px;width:230px;height:230px;
+  border-radius:50%;background:rgba(255,159,67,.85);
+}
+.hero h1,.hero p,.tag{position:relative;z-index:1}
+.hero h1{margin:0 0 8px}
+.hero p{margin:0;line-height:1.7;opacity:.92}
+.tag{
+  display:inline-block;margin-bottom:10px;padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);font-size:13px;
+}
+.layout{display:grid;grid-template-columns:1.08fr .92fr;gap:16px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.card{
+  background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:24px;
+  padding:20px;box-shadow:var(--shadow);backdrop-filter:blur(8px);
+}
+h2{margin:0 0 15px;color:var(--blue2);font-size:20px}
+.sec{margin:20px 0 10px;font-weight:800;color:var(--blue2);border-left:5px solid var(--orange);padding-left:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:700;font-size:14px;margin-bottom:6px;color:#334155}
+select{
+  width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;
+  background:#fff;font-size:15px;outline:none;
+}
+select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,128,237,.12)}
+.info{
+  margin-top:12px;border:1px solid var(--line);border-radius:18px;padding:13px;
+  background:linear-gradient(180deg,#fff,#f8fbff);font-size:14px;line-height:1.7;
+}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.pill{background:#fff0dc;color:#9a4d00;padding:5px 10px;border-radius:999px;font-size:13px;font-weight:800}
+.pill.b{background:#d8ecff;color:#102a43}
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
+.chip{border:1px solid var(--line);border-radius:16px;padding:10px;background:white}
+.chipHead{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:800}
+.chipHead input{width:16px;height:16px}
+.hitBox{margin-top:8px;display:none}
+.hitBox select{padding:8px;font-size:13px}
+.chip.active{border-color:transparent;background:linear-gradient(135deg,rgba(47,128,237,.12),rgba(255,159,67,.18))}
+.btns{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+button{
+  border:none;border-radius:16px;padding:13px 18px;font-size:15px;font-weight:900;
+  cursor:pointer;transition:.2s;
+}
+.primary{background:linear-gradient(135deg,var(--blue),var(--orange));color:white;flex:1}
+.secondary{background:#d8ecff;color:#102a43}
+button:hover{transform:translateY(-1px)}
+.result{
+  border:1px solid var(--line);border-radius:22px;padding:18px;
+  background:linear-gradient(180deg,#fff,#f8fbff);
+}
+.circle{
+  width:118px;height:118px;border-radius:50%;margin:6px auto 16px;
+  background:conic-gradient(var(--blue) 0deg,var(--orange) 220deg,#e5e7eb 220deg);
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.circle:before{content:"";position:absolute;width:88px;height:88px;background:white;border-radius:50%}
+.score{position:relative;z-index:1;text-align:center;font-weight:900;color:var(--blue2)}
+.score strong{display:block;font-size:28px}
+.rank{text-align:center;font-size:23px;font-weight:900;margin-bottom:8px}
+.s{color:var(--green)}.a{color:var(--blue)}.b{color:var(--yellow)}.c{color:var(--purple)}.d{color:var(--red)}
+.desc{text-align:center;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.quick{
+  background:#d8ecff;
+  border-radius:16px;
+  padding:13px;
+  line-height:1.8;
+  color:#102a43;
+  font-size:14px;
+  margin-bottom:12px;
+}
+ul{padding:0;margin:0;list-style:none}
+li{
+  background:#fff0dc;border-left:5px solid var(--orange);padding:9px 11px;
+  border-radius:12px;margin-bottom:8px;font-size:14px;line-height:1.55;
+}
+.tips{margin-top:14px;background:#d8ecff;color:#102a43;padding:13px;border-radius:16px;line-height:1.7;font-size:14px}
+textarea{
+  width:100%;min-height:95px;border:1px solid var(--line);border-radius:16px;
+  padding:12px;font-size:14px;line-height:1.65;resize:vertical;
+}
+.small{width:100%;margin-top:8px;background:#fff0dc;color:#9a4d00}
+.note{font-size:13px;color:var(--muted);line-height:1.7;margin-top:10px}
+.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:22px}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="tag">💙🧡 简易芯核筛选器 V0.6</div>
+  <h1>恋与深空芯核筛选器</h1>
+  <p>修正日卡/月卡结构：αβ=日卡，γδ=月卡。删除错误“套装”栏，分享文案拆成结论版与细则版。</p>
+</header>
+
+<main class="layout">
+<section class="card">
+<h2>🧪 芯核信息录入</h2>
+
+<div class="sec">第一步：选择搭档与身份</div>
+<div class="grid">
+  <div>
+    <label>男主</label>
+    <select id="boy">
+      <option>夏以昼</option>
+      <option disabled>沈星回 - 开发中</option>
+      <option disabled>黎深 - 开发中</option>
+      <option disabled>祁煜 - 开发中</option>
+      <option disabled>秦彻 - 开发中</option>
+    </select>
+  </div>
+  <div>
+    <label>身份</label>
+    <select id="identity" onchange="refreshAll()">
+      <option value="captain">远空执舰官（红漪）</option>
+      <option value="ghost">冥罗之主 / 鬼王（绿珥）</option>
+      <option value="x02">终极兵器 X-02 / 哥达（紫辉）</option>
+    </select>
+  </div>
+</div>
+
+<div id="identityInfo" class="info"></div>
+
+<div class="sec">第二步：选择芯核位置</div>
+<div class="grid">
+  <div>
+    <label>芯核位置</label>
+    <select id="position" onchange="refreshAll()">
+      <option value="α">α（日卡左，主生命）</option>
+      <option value="β">β（日卡右，方块/功能位）</option>
+      <option value="γ">γ（月卡左，主攻击）</option>
+      <option value="δ">δ（月卡右，三角位）</option>
+    </select>
+  </div>
+  <div>
+    <label>自动识别类型</label>
+    <select id="cardType" disabled>
+      <option value="日卡">日卡芯核</option>
+      <option value="月卡">月卡芯核</option>
+    </select>
+  </div>
+</div>
+
+<div class="sec">第三步：战斗配置</div>
+<div class="grid">
+  <div>
+    <label id="rankLabel">阶数</label>
+    <select id="rankLv" onchange="refreshAll()"></select>
+  </div>
+
+  <div>
+    <label>谱向</label>
+    <select id="spectrumMode" onchange="refreshAll()">
+      <option value="不确定">不确定</option>
+      <option value="顺谱">顺谱</option>
+      <option value="逆谱">逆谱</option>
+    </select>
+  </div>
+
+  <div>
+    <label>流派</label>
+    <select id="buildType" onchange="refreshAll()">
+      <option value="通用">通用</option>
+      <option value="虚弱流">虚弱流</option>
+      <option value="双暴流">双暴流</option>
+    </select>
+  </div>
+
+  <div id="ghostModeWrap">
+    <label>鬼王打法</label>
+    <select id="ghostMode" onchange="refreshAll()">
+      <option value="通用">通用</option>
+      <option value="开共鸣">开共鸣</option>
+      <option value="不开共鸣">不开共鸣</option>
+    </select>
+  </div>
+
+  <div>
+    <label>战斗时长</label>
+    <select id="battleTime">
+      <option value="通用">通用</option>
+      <option value="120秒">120秒</option>
+      <option value="90秒">90秒</option>
+      <option value="75秒">75秒</option>
+    </select>
+  </div>
+
+  <div>
+    <label>星谱</label>
+    <select id="color">
+      <option value="自动">按身份自动</option>
+      <option value="红漪">红漪（红）</option>
+      <option value="绿珥">绿珥（绿）</option>
+      <option value="紫辉">紫辉（紫）</option>
+      <option value="蓝弧">蓝弧（蓝）</option>
+      <option value="黄璃">黄璃（黄）</option>
+      <option value="粉珀">粉珀（粉）</option>
+    </select>
+  </div>
+</div>
+
+<div class="sec">第四步：主属性</div>
+<div class="grid">
+  <div>
+    <label>主属性</label>
+    <select id="mainStat"></select>
+  </div>
+
+  <div>
+    <label>当前强化等级</label>
+    <select id="level">
+      <option value="0">+0</option>
+      <option value="3">+3</option>
+      <option value="6">+6</option>
+      <option value="9">+9</option>
+      <option value="12">+12</option>
+      <option value="15">+15</option>
+    </select>
+  </div>
+</div>
+
+<div class="sec">第五步：副属性 + 强化次数</div>
+<div class="chips" id="subBox"></div>
+
+<div class="btns">
+  <button class="primary" onclick="judge()">开始判断</button>
+  <button class="secondary" onclick="resetAll()">重置</button>
+</div>
+
+<p class="note">
+※ αβ 自动识别为日卡芯核，γδ 自动识别为月卡芯核。<br>
+※ 日卡阶数使用“双0/双1/双2/双3”，月卡阶数使用“0/1/2/3”。<br>
+※ 强化规则：最高 +15；每 +3 随机增加或强化一条副属性；副属性最多 4 种。
+</p>
+</section>
+
+<aside class="card">
+<h2>📊 判断结果</h2>
+
+<div class="result">
+  <div class="circle" id="circle">
+    <div class="score"><strong id="scoreNum">--</strong><span>分</span></div>
+  </div>
+  <div id="rankText" class="rank">等待判断</div>
+  <div id="descText" class="desc">请选择信息后点击「开始判断」。</div>
+
+  <div class="quick" id="quickBox">
+    能赌吗：--<br>
+    好赌吗：--<br>
+    怎么赌：--
+  </div>
+
+  <ul id="reasons"></ul>
+</div>
+
+<div class="tips" id="tipsBox">
+当前为 V0.6：修正日/月卡结构，删除错误套装栏，优化分享文案。
+</div>
+
+<h2 style="margin-top:20px;">📋 A. 一句话结论版</h2>
+<textarea id="shortShare" readonly placeholder="判断后会生成短结论。"></textarea>
+<button class="small" onclick="copyText('shortShare')">复制一句话结论</button>
+
+<h2 style="margin-top:20px;">📋 B. 评分细则版</h2>
+<textarea id="detailShare" readonly placeholder="判断后会生成评分细则。"></textarea>
+<button class="small" onclick="copyText('detailShare')">复制评分细则</button>
+</aside>
+</main>
+
+<div class="footer">💙🧡 简易芯核筛选器 V0.6 · by 阿泽</div>
+</div>
+
+<script>
+const corePools={
+  "α":{card:"日卡",desc:"日卡左芯核，主属性固定生命",main:["生命"]},
+  "β":{card:"日卡",desc:"日卡右芯核，方块/功能位",main:["生命加成","攻击加成","防御加成","加速回能","誓约回能","誓约增伤"]},
+  "γ":{card:"月卡",desc:"月卡左芯核，主属性固定攻击",main:["攻击"]},
+  "δ":{card:"月卡",desc:"月卡右芯核，三角位",main:["生命加成","攻击加成","防御加成","暴击","暴伤","虚弱增伤"]}
+};
+
+const subStats=["生命","生命加成","攻击","攻击加成","防御","防御加成","暴击","暴伤","誓约增伤","虚弱增伤"];
+
+const baseRules={
+  captain:{
+    name:"远空执舰官",alias:"执舰官",color:"红漪",
+    focus:"防御体系。核心偏防御加成 / 虚弱增伤 / 防御。"
+  },
+  ghost:{
+    name:"冥罗之主",alias:"鬼王",color:"绿珥",
+    focus:"生命体系。虚弱流偏生命加成，双暴流偏暴击/暴伤。"
+  },
+  x02:{
+    name:"终极兵器 X-02",alias:"哥达",color:"紫辉",
+    focus:"攻击体系。虚弱流偏攻击加成/虚弱，双暴流偏暴击/暴伤/攻击加成。"
+  }
+};
+
+function val(id){return document.getElementById(id).value}
+function base(){return baseRules[val("identity")]}
+function currentCardType(){return corePools[val("position")].card}
+
+function profile(){
+  const id=val("identity");
+  const build=val("buildType");
+
+  if(id==="captain"){
+    return {
+      title:"执舰官防御体系",
+      core:["防御加成","虚弱增伤"],
+      good:["防御"],
+      ok:["攻击加成","誓约增伤","攻击","暴击","暴伤"],
+      waste:["生命","生命加成"],
+      note:"防御加成/虚弱增伤是核心；防御可用但强化太多建议暂停。"
+    };
+  }
+
+  if(id==="ghost" && build==="双暴流"){
+    return {
+      title:"鬼王双暴流",
+      core:["暴击","暴伤"],
+      good:["生命加成"],
+      ok:["生命"],
+      waste:["防御","防御加成"],
+      note:"暴击/暴伤是核心，生命加成次高，生命少量可用。"
+    };
+  }
+
+  if(id==="ghost"){
+    return {
+      title:"鬼王虚弱/通用流",
+      core:["生命加成"],
+      good:["生命","攻击加成","虚弱增伤"],
+      ok:["誓约增伤","暴击","暴伤","攻击"],
+      waste:["防御","防御加成"],
+      note:"生命加成是核心，生命/攻击加成/虚弱增伤适量可用。"
+    };
+  }
+
+  if(id==="x02" && build==="双暴流"){
+    return {
+      title:"哥达双暴流",
+      core:["暴击","暴伤","攻击加成"],
+      good:["誓约增伤","攻击"],
+      ok:["虚弱增伤"],
+      waste:["生命","生命加成","防御","防御加成"],
+      note:"暴击/暴伤/攻击加成是核心；强化没打到核心建议及时停。"
+    };
+  }
+
+  return {
+    title:"哥达虚弱/通用流",
+    core:["攻击加成"],
+    good:["攻击","虚弱增伤","誓约增伤"],
+    ok:["暴击","暴伤"],
+    waste:["生命","生命加成","防御","防御加成"],
+    note:"攻击加成是核心，攻击/虚弱增伤/誓约增伤可用。"
+  };
+}
+
+function refreshAll(){
+  refreshCardType();
+  refreshRankOptions();
+  refreshMainStats();
+  updateInfo();
+}
+
+function refreshCardType(){
+  const type=currentCardType();
+  const card=document.getElementById("cardType");
+  card.value=type;
+}
+
+function refreshRankOptions(){
+  const type=currentCardType();
+  const rank=document.getElementById("rankLv");
+  const old=rank.value;
+  rank.innerHTML="";
+
+  let opts=[];
+  if(type==="日卡"){
+    document.getElementById("rankLabel").textContent="日卡阶数";
+    opts=["不确定","双0阶","双1阶","双2阶","双3阶"];
+  }else{
+    document.getElementById("rankLabel").textContent="月卡阶数";
+    opts=["不确定","0阶","1阶","2阶","3阶"];
+  }
+
+  opts.forEach(x=>{
+    const op=document.createElement("option");
+    op.value=x;
+    op.textContent=x;
+    rank.appendChild(op);
+  });
+
+  if(opts.includes(old)) rank.value=old;
+}
+
+function refreshMainStats(){
+  const pos=val("position");
+  const main=document.getElementById("mainStat");
+  const old=main.value;
+  main.innerHTML="";
+
+  corePools[pos].main.forEach(s=>{
+    const op=document.createElement("option");
+    op.value=s;
+    op.textContent=s;
+    main.appendChild(op);
+  });
+
+  if(corePools[pos].main.includes(old)) main.value=old;
+}
+
+function updateInfo(){
+  const b=base();
+  const p=profile();
+  const pos=val("position");
+  const card=currentCardType();
+  const id=val("identity");
+
+  document.getElementById("ghostModeWrap").style.display=id==="ghost" ? "block" : "none";
+
+  document.getElementById("identityInfo").innerHTML=`
+    <strong>${b.name} / ${b.alias}</strong>
+    <div class="pills">
+      <span class="pill b">推荐星谱：${b.color}</span>
+      <span class="pill">${card}芯核</span>
+      <span class="pill b">${corePools[pos].desc}</span>
+      <span class="pill">${p.title}</span>
+    </div>
+    <div><strong>身份方向：</strong>${b.focus}</div>
+    <div><strong>当前规则：</strong>${p.note}</div>
+  `;
+}
+
+function buildSubBox(){
+  const box=document.getElementById("subBox");
+  box.innerHTML="";
+  subStats.forEach(s=>{
+    const div=document.createElement("div");
+    div.className="chip";
+    div.innerHTML=`
+      <div class="chipHead">
+        <input type="checkbox" value="${s}" onchange="toggleChip(this)">
+        <span>${s}</span>
+      </div>
+      <div class="hitBox">
+        <label style="margin-top:8px;">强化次数</label>
+        <select data-stat="${s}">
+          <option value="0">0 次</option>
+          <option value="1">1 次</option>
+          <option value="2">2 次</option>
+          <option value="3">3 次</option>
+          <option value="4">4 次</option>
+          <option value="5">5 次</option>
+        </select>
+      </div>
+    `;
+    box.appendChild(div);
+  });
+}
+
+function toggleChip(input){
+  const chip=input.closest(".chip");
+  const box=chip.querySelector(".hitBox");
+  if(input.checked){
+    chip.classList.add("active");
+    box.style.display="block";
+  }else{
+    chip.classList.remove("active");
+    box.style.display="none";
+    box.querySelector("select").value="0";
+  }
+}
+
+function selectedSubs(){
+  return [...document.querySelectorAll("#subBox input:checked")].map(i=>i.value);
+}
+
+function hitMap(){
+  const map={};
+  document.querySelectorAll("#subBox input:checked").forEach(i=>{
+    const s=i.value;
+    const sel=i.closest(".chip").querySelector("select");
+    map[s]=Number(sel.value);
+  });
+  return map;
+}
+
+function tier(stat,p){
+  if(p.core.includes(stat))return {name:"核心",score:18,txt:"当前流派核心词条"};
+  if(p.good.includes(stat))return {name:"优秀",score:13,txt:"高价值词条"};
+  if(p.ok.includes(stat))return {name:"可用",score:8,txt:"可用/过渡词条"};
+  if(p.waste.includes(stat))return {name:"废词条",score:-6,txt:"收益偏低或不推荐"};
+  return {name:"待确认",score:1,txt:"暂未细分"};
+}
+
+function mainScore(){
+  const id=val("identity");
+  const pos=val("position");
+  const main=val("mainStat");
+  const mode=val("spectrumMode");
+  const build=val("buildType");
+  const rank=val("rankLv");
+  const ghostMode=val("ghostMode");
+  const time=val("battleTime");
+
+  if(pos==="α"){
+    let s=10,t="α 是日卡左芯核，主属性固定生命，主要看副属性。";
+    if(id==="ghost"){s+=8;t+=" 鬼王吃生命，α 更友好。";}
+    return {score:s,txt:t};
+  }
+
+  if(pos==="γ"){
+    let s=10,t="γ 是月卡左芯核，主属性固定攻击，主要看副属性。";
+    if(id==="x02"){s+=8;t+=" 哥达吃攻击，γ 更友好。";}
+    return {score:s,txt:t};
+  }
+
+  if(pos==="β"){
+    let rec=[],txt="";
+    if(id==="captain"){
+      rec=rank==="双0阶"?["誓约回能","誓约增伤","防御加成"]:["誓约增伤","防御加成","誓约回能","加速回能"];
+      txt="执舰官 β 位通常看誓约增伤/防御加成/回能。";
+    }
+
+    if(id==="ghost"){
+      if(ghostMode==="不开共鸣"){
+        rec=["生命加成","誓约增伤"];
+        txt="鬼王不开共鸣时，β 更偏生命加成/誓约增伤。";
+      }else{
+        if(rank==="双0阶")rec=["誓约回能","加速回能","生命加成"];
+        else if(rank==="双1阶"||rank==="双2阶")rec=["生命加成","誓约回能","誓约增伤","加速回能"];
+        else rec=["誓约增伤","生命加成","誓约回能"];
+        txt="鬼王 β 位随阶数/打法变化，生命加成、誓约增伤、回能均可参考。";
+      }
+      if(time==="90秒")txt+=" 90秒局可额外关注誓约回能。";
+    }
+
+    if(id==="x02"){
+      rec=build==="双暴流"?["誓约增伤","誓约回能","攻击加成"]:["誓约增伤","攻击加成","誓约回能"];
+      txt="哥达 β 位通常看誓约增伤/攻击加成，双暴流可参考誓约回能。";
+    }
+
+    if(main===rec[0])return {score:30,txt:`β 主属性「${main}」命中当前第一推荐。${txt}`};
+    if(rec.includes(main))return {score:23,txt:`β 主属性「${main}」在当前推荐范围内。${txt}`};
+    return {score:8,txt:`β 主属性「${main}」不是当前优先项，需谨慎。${txt}`};
+  }
+
+  if(pos==="δ"){
+    let rec=[],txt="";
+    if(id==="captain"){
+      if(mode==="逆谱" && rank==="3阶" && build==="双暴流"){
+        rec=["暴击","暴伤","防御加成","虚弱增伤"];
+        txt="执舰官月卡3阶逆谱可转双暴。";
+      }else{
+        rec=["虚弱增伤","防御加成","暴击","暴伤"];
+        txt="执舰官多数 δ 位优先虚弱增伤，其次防御加成。";
+      }
+    }
+
+    if(id==="ghost"){
+      if(build==="双暴流"){
+        rec=["暴击","暴伤","生命加成","虚弱增伤"];
+        txt="鬼王双暴流 δ 位优先暴击/暴伤，其次生命加成。";
+      }else{
+        rec=["虚弱增伤","生命加成","暴击","暴伤"];
+        txt="鬼王虚弱流 δ 位优先虚弱增伤，生命加成也可用。";
+      }
+    }
+
+    if(id==="x02"){
+      if(build==="双暴流"){
+        rec=["暴击","暴伤","攻击加成","虚弱增伤"];
+        txt="哥达双暴流 δ 位优先暴击/暴伤/攻击加成。";
+      }else{
+        rec=["虚弱增伤","攻击加成","暴击","暴伤"];
+        txt="哥达虚弱流 δ 位优先虚弱增伤，其次攻击加成。";
+      }
+    }
+
+    if(main===rec[0])return {score:32,txt:`δ 主属性「${main}」命中当前第一推荐。${txt}`};
+    if(rec.includes(main))return {score:24,txt:`δ 主属性「${main}」在当前可用推荐内。${txt}`};
+    return {score:7,txt:`δ 主属性「${main}」不太契合当前流派。${txt}`};
+  }
+}
+
+function judge(){
+  const b=base(),p=profile();
+  const color=val("color"),level=Number(val("level"));
+  const subs=selectedSubs(),hits=hitMap();
+  let score=0,reasons=[];
+
+  if(color==="自动"){
+    score+=10;
+    reasons.push(`星谱按身份自动视为「${b.color}」：+10`);
+  }else if(color===b.color){
+    score+=14;
+    reasons.push(`星谱「${color}」命中 ${b.name} 推荐：+14`);
+  }else{
+    score-=10;
+    reasons.push(`星谱「${color}」不匹配推荐「${b.color}」：-10`);
+  }
+
+  const ms=mainScore();
+  score+=ms.score;
+  reasons.push(ms.txt+` +${ms.score}`);
+
+  let good=0,waste=0,coreHits=0,goodHits=0,wasteHits=0;
+
+  if(subs.length===0)reasons.push("未选择副属性，副词条部分不计分。");
+
+  subs.forEach(s=>{
+    const t=tier(s,p),h=hits[s]||0;
+    score+=t.score;
+
+    if(t.score>=8)good++;
+    if(t.score<0)waste++;
+    if(h>0 && p.core.includes(s))coreHits+=h;
+    if(h>0 && (p.core.includes(s)||p.good.includes(s)))goodHits+=h;
+    if(h>0 && p.waste.includes(s))wasteHits+=h;
+
+    if(h>0){
+      if(p.core.includes(s))score+=h*8;
+      else if(p.good.includes(s))score+=h*5;
+      else if(p.ok.includes(s))score+=h*2;
+      else if(p.waste.includes(s))score-=h*6;
+    }
+
+    reasons.push(`副属性「${s}」：${t.name}，${t.txt}，基础 ${t.score>=0?"+":""}${t.score}${h?`；强化 ${h} 次`:""}`);
+  });
+
+  if(good>=3){
+    score+=10;
+    reasons.push(`有效副词条达到 ${good} 条，胚子质量较好：+10`);
+  }else if(good===2){
+    score+=5;
+    reasons.push("有效副词条 2 条，可小赌观察：+5");
+  }
+
+  if(waste>=2){
+    score-=8;
+    reasons.push(`废词条达到 ${waste} 条，风险较高：-8`);
+  }
+
+  if(level===0){
+    score+=2;
+    reasons.push("+0 胚子阶段，适合先看底子：+2");
+  }else if(level<=6){
+    score+=5;
+    reasons.push(`当前 +${level}，仍适合赌核观察：+5`);
+  }else if(level<=9){
+    score+=4;
+    reasons.push(`当前 +${level}，需关注是否歪词条：+4`);
+  }else{
+    score+=2;
+    reasons.push(`当前 +${level}，投入较高，需谨慎继续：+2`);
+  }
+
+  const gamble=gambleAdvice({p,b,subs,hits,good,waste,coreHits,goodHits,wasteHits,level});
+  reasons.push(`🎲 赌核判断：${gamble.short}。${gamble.text}`);
+
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  const rankObj=getRank(score);
+  render(score,rankObj,reasons,gamble,{b,p,subs,hits,level});
+}
+
+function gambleAdvice(ctx){
+  const id=val("identity");
+  const build=val("buildType");
+  const level=ctx.level;
+  const hits=ctx.hits;
+
+  if(id==="captain"){
+    const defHits=hits["防御"]||0;
+    const coreHits=(hits["防御加成"]||0)+(hits["虚弱增伤"]||0);
+    const lifeHits=(hits["生命"]||0)+(hits["生命加成"]||0);
+
+    if(lifeHits>0)return {short:"🛑 谨慎停手",can:"不太建议",level:"偏难赌",how:"生命/生命加成偏废，强化打到这类建议停手。",text:"执舰官中生命/生命加成偏废，强化打到这类词条建议停手。"};
+    if(defHits>=2)return {short:"⚠️ 暂停观察",can:"能用",level:"一般赌",how:"固定防御已强化较多，建议暂停等更好胚子。",text:"固定防御被强化到 2 次左右，建议暂停升级。"};
+    if(coreHits>=2)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"可继续冲 +12/+15，优先看防御加成/虚弱增伤。",text:"强化命中防御加成/虚弱增伤核心词条，属于好胚子。"};
+    if(ctx.good>=3)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"先到 +9，若不打核心词条就停。",text:"副词条底子好，建议赌到 +6/+9。"};
+    return {short:"🎲 小赌",can:"能赌",level:"小赌",how:"先到 +3/+6，没打到防御加成/虚弱增伤就停。",text:"可小赌到 +3/+6。"};
+  }
+
+  if(id==="ghost" && build==="双暴流"){
+    const critHits=(hits["暴击"]||0)+(hits["暴伤"]||0);
+    const hpPctHits=hits["生命加成"]||0;
+
+    if(critHits>=3)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，命中双暴核心。",text:"鬼王双暴流强化明显命中暴击/暴伤，值得继续培养。"};
+    if(critHits>=1 && hpPctHits>=1)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可继续到 +9/+12，优先双暴。",text:"双暴和生命加成都有命中，可以继续赌。"};
+    if(ctx.wasteHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"多次歪防御类，建议止损。",text:"强化多次打到防御类废词条，建议止损。"};
+    return {short:"⚠️ 谨慎赌",can:"能赌",level:"谨慎赌",how:"下一次最好命中暴击/暴伤，否则停。",text:"鬼王双暴流最好强化到暴击/暴伤。"};
+  }
+
+  if(id==="ghost"){
+    const hpPctHits=hits["生命加成"]||0;
+    const badHits=(hits["防御"]||0)+(hits["防御加成"]||0);
+
+    if(hpPctHits>=3)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，生命加成命中很多次。",text:"鬼王虚弱流生命加成命中多次，属于很好结果。"};
+    if(hpPctHits>=1 && ctx.goodHits>=2)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可继续观察到 +9/+12。",text:"命中生命加成且有效词条强化不错。"};
+    if(badHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"多次歪防御类，建议止损。",text:"鬼王不喜欢防御类词条，多次歪到防御建议止损。"};
+    return {short:"🎲 小赌",can:"能赌",level:"小赌",how:"可到 +6/+9，核心目标是生命加成。",text:"可赌到 +6/+9，核心目标是生命加成。"};
+  }
+
+  if(id==="x02" && build==="双暴流"){
+    const coreHits=(hits["暴击"]||0)+(hits["暴伤"]||0)+(hits["攻击加成"]||0);
+
+    if(coreHits>=3)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，核心强化命中多次。",text:"哥达双暴流强化命中暴击/暴伤/攻击加成多次。"};
+    if(level>=6 && coreHits===0)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"+6 还没打到核心，建议停手。",text:"哥达双暴流强化没打到暴击/暴伤/攻击加成，建议停手。"};
+    if(coreHits>=1)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可继续到 +9，优先暴击/暴伤/攻击加成。",text:"已命中双暴/攻击加成核心词条。"};
+    return {short:"⚠️ 谨慎赌",can:"能赌",level:"谨慎赌",how:"下一次不命中核心就停。",text:"哥达双暴流要求强化命中暴击/暴伤/攻击加成。"};
+  }
+
+  if(id==="x02"){
+    const atkHits=(hits["攻击加成"]||0)+(hits["攻击"]||0);
+
+    if(atkHits>=2)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，攻击相关命中好。",text:"哥达攻击体系强化命中攻击相关词条。"};
+    if(ctx.wasteHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"多次歪生命/防御类，建议止损。",text:"多次歪到生命/防御类废词条，建议止损。"};
+    if(ctx.good>=3)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可以赌到 +9 观察。",text:"底子不错，可以赌到 +9。"};
+    return {short:"🎲 小赌",can:"能赌",level:"小赌",how:"先到 +3/+6，看是否命中攻击加成/虚弱/誓约。",text:"可赌到 +3/+6。"};
+  }
+
+  return {short:"⚠️ 谨慎赌",can:"看情况",level:"谨慎赌",how:"规则未覆盖，建议人工判断。",text:"规则未完全覆盖。"};
+}
+
+function getRank(score){
+  if(score>=85)return {rank:"S · 毕业候选",cls:"s",desc:"非常优秀，建议保留并锁定。"};
+  if(score>=70)return {rank:"A · 推荐保留",cls:"a",desc:"整体不错，可以继续培养观察。"};
+  if(score>=50)return {rank:"B · 可过渡",cls:"b",desc:"能用，但有更好胚子可替换。"};
+  if(score>=30)return {rank:"C · 看情况",cls:"c",desc:"需要结合资源与当前缺口判断。"};
+  return {rank:"D · 狗粮候选",cls:"d",desc:"不太建议投入资源。"};
+}
+
+function render(score,rankObj,reasons,gamble,info){
+  document.getElementById("scoreNum").textContent=score;
+  const deg=Math.round(score/100*360);
+  document.getElementById("circle").style.background=`conic-gradient(var(--blue) 0deg,var(--orange) ${deg}deg,#e5e7eb ${deg}deg)`;
+
+  const rt=document.getElementById("rankText");
+  rt.textContent=rankObj.rank;
+  rt.className=`rank ${rankObj.cls}`;
+
+  document.getElementById("descText").textContent=`${rankObj.desc}｜赌核：${gamble.short}`;
+
+  document.getElementById("quickBox").innerHTML=`
+    <strong>能赌吗：</strong>${gamble.can}<br>
+    <strong>好赌吗：</strong>${gamble.level}<br>
+    <strong>怎么赌：</strong>${gamble.how}
+  `;
+
+  const ul=document.getElementById("reasons");
+  ul.innerHTML="";
+  reasons.forEach(x=>{
+    const li=document.createElement("li");
+    li.textContent=x;
+    ul.appendChild(li);
+  });
+
+  document.getElementById("tipsBox").innerHTML=`
+    <strong>当前结论：</strong>${gamble.text}<br>
+    <strong>当前类型：</strong>${currentCardType()}芯核 / ${val("position")} 位<br>
+    <strong>当前流派：</strong>${info.p.title}
+  `;
+
+  document.getElementById("shortShare").value=shortText(score,rankObj,gamble,info);
+  document.getElementById("detailShare").value=detailText(score,rankObj,gamble,info,reasons);
+}
+
+function subText(info){
+  return info.subs.length?info.subs.map(s=>`${s}${info.hits[s]?`+${info.hits[s]}`:""}`).join(" / "):"未选择";
+}
+
+function shortText(score,rankObj,gamble,info){
+  return `【结论】${gamble.short}。
+适合：夏以昼-${info.b.name}，${currentCardType()}${val("position")}位，${val("buildType")}。
+能赌吗：${gamble.can}；好赌吗：${gamble.level}。
+怎么赌：${gamble.how}`;
+}
+
+function detailText(score,rankObj,gamble,info,reasons){
+  const color=val("color")==="自动"?`${info.b.color}（自动）`:val("color");
+  return `【评分细则】
+
+搭档：夏以昼
+身份：${info.b.name} / ${info.b.alias}
+星谱：${color}
+芯核类型：${currentCardType()}
+位置：${val("position")}
+阶数：${val("rankLv")}
+谱向：${val("spectrumMode")}
+流派：${val("buildType")}
+鬼王打法：${val("identity")==="ghost"?val("ghostMode"):"-"}
+
+主属性：${val("mainStat")}
+强化等级：+${info.level}
+副属性：${subText(info)}
+
+基础评级：${rankObj.rank}
+评分：${score}/100
+赌核评级：${gamble.short}
+
+能赌吗：${gamble.can}
+好赌吗：${gamble.level}
+怎么赌：${gamble.how}
+
+理由：
+${reasons.slice(0,10).map((r,i)=>`${i+1}. ${r}`).join("\n")}
+
+※ 结果仅供参考，请结合练度、队伍、手法与资源情况。`;
+}
+
+function resetAll(){
+  document.querySelectorAll("select").forEach(s=>s.selectedIndex=0);
+  document.querySelectorAll("#subBox input").forEach(i=>{
+    i.checked=false;
+    toggleChip(i);
+  });
+
+  document.getElementById("scoreNum").textContent="--";
+  document.getElementById("circle").style.background="conic-gradient(var(--blue) 0deg,var(--orange) 220deg,#e5e7eb 220deg)";
+  const rt=document.getElementById("rankText");
+  rt.textContent="等待判断";
+  rt.className="rank";
+  document.getElementById("descText").textContent="请选择信息后点击「开始判断」。";
+  document.getElementById("quickBox").innerHTML="能赌吗：--<br>好赌吗：--<br>怎么赌：--";
+  document.getElementById("reasons").innerHTML="";
+  document.getElementById("shortShare").value="";
+  document.getElementById("detailShare").value="";
+  refreshAll();
+}
+
+function copyText(id){
+  const t=document.getElementById(id);
+  if(!t.value.trim()){
+    alert("还没有生成文案喵！");
+    return;
+  }
+  t.select();
+  document.execCommand("copy");
+  alert("已复制！");
+}
+
+window.onload=()=>{
+  buildSubBox();
+  refreshAll();
+};
+</script>
+</body>
+</html>
