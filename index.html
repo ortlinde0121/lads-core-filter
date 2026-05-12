@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>恋与深空芯核筛选器 V0.6</title>
+<title>恋与深空简易芯核筛选器 V0.7</title>
 <style>
 :root{
   --blue:#2f80ed;--blue2:#102a43;--orange:#ff9f43;--bg:#f5f8fc;
@@ -119,16 +119,16 @@ textarea{
 <body>
 <div class="wrap">
 <header class="hero">
-  <div class="tag">💙🧡 简易芯核筛选器 V0.6</div>
+  <div class="tag">💙🧡 简易芯核筛选器 · V0.7</div>
   <h1>恋与深空芯核筛选器</h1>
-  <p>修正日卡/月卡结构：αβ=日卡，γδ=月卡。删除错误“套装”栏，分享文案拆成结论版与细则版。</p>
+  <p>V0.7：按当前使用身份判断芯核收益，星谱颜色不参与评分；新增低优先级词条档位，优化赌核判断。</p>
 </header>
 
 <main class="layout">
 <section class="card">
 <h2>🧪 芯核信息录入</h2>
 
-<div class="sec">第一步：选择搭档与身份</div>
+<div class="sec">第一步：选择当前使用身份</div>
 <div class="grid">
   <div>
     <label>男主</label>
@@ -141,7 +141,7 @@ textarea{
     </select>
   </div>
   <div>
-    <label>身份</label>
+    <label>当前使用身份</label>
     <select id="identity" onchange="refreshAll()">
       <option value="captain">远空执舰官（红漪）</option>
       <option value="ghost">冥罗之主 / 鬼王（绿珥）</option>
@@ -206,26 +206,13 @@ textarea{
     </select>
   </div>
 
-  <div>
+    <div>
     <label>战斗时长</label>
     <select id="battleTime">
       <option value="通用">通用</option>
       <option value="120秒">120秒</option>
       <option value="90秒">90秒</option>
       <option value="75秒">75秒</option>
-    </select>
-  </div>
-
-  <div>
-    <label>星谱</label>
-    <select id="color">
-      <option value="自动">按身份自动</option>
-      <option value="红漪">红漪（红）</option>
-      <option value="绿珥">绿珥（绿）</option>
-      <option value="紫辉">紫辉（紫）</option>
-      <option value="蓝弧">蓝弧（蓝）</option>
-      <option value="黄璃">黄璃（黄）</option>
-      <option value="粉珀">粉珀（粉）</option>
     </select>
   </div>
 </div>
@@ -260,7 +247,8 @@ textarea{
 
 <p class="note">
 ※ αβ 自动识别为日卡芯核，γδ 自动识别为月卡芯核。<br>
-※ 日卡阶数使用“双0/双1/双2/双3”，月卡阶数使用“0/1/2/3”。<br>
+※ 本工具按“当前使用身份”判断芯核收益，不按卡片来源判断。<br>
+※ 星谱颜色请根据实际配队需求选择，不参与本工具评分。<br>
 ※ 强化规则：最高 +15；每 +3 随机增加或强化一条副属性；副属性最多 4 种。
 </p>
 </section>
@@ -285,7 +273,7 @@ textarea{
 </div>
 
 <div class="tips" id="tipsBox">
-当前为 V0.6：修正日/月卡结构，删除错误套装栏，优化分享文案。
+当前为 V0.7：按当前使用身份判断芯核收益，星谱颜色不参与评分，并新增低优先级词条档位。
 </div>
 
 <h2 style="margin-top:20px;">📋 A. 一句话结论版</h2>
@@ -298,7 +286,7 @@ textarea{
 </aside>
 </main>
 
-<div class="footer">💙🧡 简易芯核筛选器 V0.6 · by 阿泽</div>
+<div class="footer">💙🧡 简易芯核筛选器 V0.7 · by 阿泽</div>
 </div>
 
 <script>
@@ -313,15 +301,15 @@ const subStats=["生命","生命加成","攻击","攻击加成","防御","防御
 
 const baseRules={
   captain:{
-    name:"远空执舰官",alias:"执舰官",color:"红漪",
+    name:"远空执舰官",alias:"执舰官",
     focus:"防御体系。核心偏防御加成 / 虚弱增伤 / 防御。"
   },
   ghost:{
-    name:"冥罗之主",alias:"鬼王",color:"绿珥",
+    name:"冥罗之主",alias:"鬼王",
     focus:"生命体系。虚弱流偏生命加成，双暴流偏暴击/暴伤。"
   },
   x02:{
-    name:"终极兵器 X-02",alias:"哥达",color:"紫辉",
+    name:"终极兵器 X-02",alias:"哥达",
     focus:"攻击体系。虚弱流偏攻击加成/虚弱，双暴流偏暴击/暴伤/攻击加成。"
   }
 };
@@ -340,6 +328,7 @@ function profile(){
       core:["防御加成","虚弱增伤"],
       good:["防御"],
       ok:["攻击加成","誓约增伤","攻击","暴击","暴伤"],
+      low:[],
       waste:["生命","生命加成"],
       note:"防御加成/虚弱增伤是核心；防御可用但强化太多建议暂停。"
     };
@@ -351,8 +340,9 @@ function profile(){
       core:["暴击","暴伤"],
       good:["生命加成"],
       ok:["生命"],
+      low:["攻击加成","虚弱增伤","誓约增伤","攻击"],
       waste:["防御","防御加成"],
-      note:"暴击/暴伤是核心，生命加成次高，生命少量可用。"
+      note:"暴击/暴伤是核心，生命加成次高，生命少量可用；攻击加成/虚弱增伤/誓约增伤/攻击属于低优先级过渡词条。"
     };
   }
 
@@ -362,6 +352,7 @@ function profile(){
       core:["生命加成"],
       good:["生命","攻击加成","虚弱增伤"],
       ok:["誓约增伤","暴击","暴伤","攻击"],
+      low:[],
       waste:["防御","防御加成"],
       note:"生命加成是核心，生命/攻击加成/虚弱增伤适量可用。"
     };
@@ -373,6 +364,7 @@ function profile(){
       core:["暴击","暴伤","攻击加成"],
       good:["誓约增伤","攻击"],
       ok:["虚弱增伤"],
+      low:[],
       waste:["生命","生命加成","防御","防御加成"],
       note:"暴击/暴伤/攻击加成是核心；强化没打到核心建议及时停。"
     };
@@ -383,6 +375,7 @@ function profile(){
     core:["攻击加成"],
     good:["攻击","虚弱增伤","誓约增伤"],
     ok:["暴击","暴伤"],
+    low:[],
     waste:["生命","生命加成","防御","防御加成"],
     note:"攻击加成是核心，攻击/虚弱增伤/誓约增伤可用。"
   };
@@ -451,17 +444,17 @@ function updateInfo(){
 
   document.getElementById("ghostModeWrap").style.display=id==="ghost" ? "block" : "none";
 
-  document.getElementById("identityInfo").innerHTML=`
-    <strong>${b.name} / ${b.alias}</strong>
-    <div class="pills">
-      <span class="pill b">推荐星谱：${b.color}</span>
-      <span class="pill">${card}芯核</span>
-      <span class="pill b">${corePools[pos].desc}</span>
-      <span class="pill">${p.title}</span>
-    </div>
-    <div><strong>身份方向：</strong>${b.focus}</div>
-    <div><strong>当前规则：</strong>${p.note}</div>
-  `;
+ document.getElementById("identityInfo").innerHTML=`
+  <strong>${b.name} / ${b.alias}</strong>
+  <div class="pills">
+    <span class="pill">${card}芯核</span>
+    <span class="pill b">${corePools[pos].desc}</span>
+    <span class="pill">${p.title}</span>
+  </div>
+  <div><strong>身份方向：</strong>${b.focus}</div>
+  <div><strong>当前规则：</strong>${p.note}</div>
+  <div><strong>说明：</strong>本工具按当前使用身份判断收益；星谱颜色请根据实际配队需求选择，不参与评分。</div>
+`;
 }
 
 function buildSubBox(){
@@ -522,6 +515,7 @@ function tier(stat,p){
   if(p.core.includes(stat))return {name:"核心",score:18,txt:"当前流派核心词条"};
   if(p.good.includes(stat))return {name:"优秀",score:13,txt:"高价值词条"};
   if(p.ok.includes(stat))return {name:"可用",score:8,txt:"可用/过渡词条"};
+  if(p.low && p.low.includes(stat))return {name:"低优先",score:3,txt:"低优先级/过渡词条"};
   if(p.waste.includes(stat))return {name:"废词条",score:-6,txt:"收益偏低或不推荐"};
   return {name:"待确认",score:1,txt:"暂未细分"};
 }
@@ -617,21 +611,12 @@ function mainScore(){
 }
 
 function judge(){
-  const b=base(),p=profile();
-  const color=val("color"),level=Number(val("level"));
-  const subs=selectedSubs(),hits=hitMap();
-  let score=0,reasons=[];
+const b=base(),p=profile();
+const level=Number(val("level"));
+const subs=selectedSubs(),hits=hitMap();
+let score=0,reasons=[];
 
-  if(color==="自动"){
-    score+=10;
-    reasons.push(`星谱按身份自动视为「${b.color}」：+10`);
-  }else if(color===b.color){
-    score+=14;
-    reasons.push(`星谱「${color}」命中 ${b.name} 推荐：+14`);
-  }else{
-    score-=10;
-    reasons.push(`星谱「${color}」不匹配推荐「${b.color}」：-10`);
-  }
+reasons.push("星谱颜色不参与评分，请根据实际配队需求选择。");
 
   const ms=mainScore();
   score+=ms.score;
@@ -652,11 +637,12 @@ function judge(){
     if(h>0 && p.waste.includes(s))wasteHits+=h;
 
     if(h>0){
-      if(p.core.includes(s))score+=h*8;
-      else if(p.good.includes(s))score+=h*5;
-      else if(p.ok.includes(s))score+=h*2;
-      else if(p.waste.includes(s))score-=h*6;
-    }
+  if(p.core.includes(s))score+=h*8;
+  else if(p.good.includes(s))score+=h*5;
+  else if(p.ok.includes(s))score+=h*2;
+  else if(p.low && p.low.includes(s))score+=h*1;
+  else if(p.waste.includes(s))score-=h*6;
+}
 
     reasons.push(`副属性「${s}」：${t.name}，${t.txt}，基础 ${t.score>=0?"+":""}${t.score}${h?`；强化 ${h} 次`:""}`);
   });
@@ -688,12 +674,170 @@ function judge(){
     reasons.push(`当前 +${level}，投入较高，需谨慎继续：+2`);
   }
 
-  const gamble=gambleAdvice({p,b,subs,hits,good,waste,coreHits,goodHits,wasteHits,level});
-  reasons.push(`🎲 赌核判断：${gamble.short}。${gamble.text}`);
+ let gamble=gambleAdvice({p,b,subs,hits,good,waste,coreHits,goodHits,wasteHits,level});
+gamble=adjustGambleByLevel(gamble, level);
+reasons.push(`🎲 赌核判断：${gamble.short}。${gamble.text}`);
 
   score=Math.max(0,Math.min(100,Math.round(score)));
   const rankObj=getRank(score);
   render(score,rankObj,reasons,gamble,{b,p,subs,hits,level});
+}
+
+function adjustGambleByLevel(gamble, level){
+  const isStop =
+    gamble.short.includes("停手") ||
+    gamble.short.includes("不建议") ||
+    gamble.short.includes("谨慎停手") ||
+    gamble.short.includes("暂停观察");
+
+  const isLock =
+    gamble.short.includes("上锁");
+
+  const isGood =
+    gamble.short.includes("好赌") ||
+    gamble.short.includes("上锁");
+
+  // +15：已经满级，不能再赌
+  if(level >= 15){
+    if(isLock || isGood){
+      return {
+        ...gamble,
+        can:"已满级",
+        level:"无需再赌",
+        how:"已经 +15，不能继续强化。若评分和词条都不错，建议上锁保留。",
+        text:"当前芯核已经满级，不能继续赌；若整体表现优秀，建议保留或上锁。"
+      };
+    }
+
+    if(isStop){
+      return {
+        ...gamble,
+        can:"已满级",
+        level:"赌完了",
+        how:"已经 +15，不能继续强化。若结果不理想，建议作为过渡，有更好芯核后替换。",
+        text:"当前芯核已经满级且结果不理想，后续只能考虑过渡、替换或分解。"
+      };
+    }
+
+    return {
+      ...gamble,
+      can:"已满级",
+      level:"无法再赌",
+      how:"已经 +15，不能继续强化。请根据评分决定保留、过渡或替换。",
+      text:"当前芯核已经满级，工具只判断成品质量，不再给继续强化建议。"
+    };
+  }
+
+  // +12：只剩最后一跳
+  if(level === 12){
+    if(isStop){
+      return {
+        ...gamble,
+        how:"当前已经 +12，若前面已经歪得明显，不建议再冲 +15。",
+        text:"当前已 +12，继续到 +15 成本较高；若词条不理想，建议停手。"
+      };
+    }
+
+    if(isGood){
+      return {
+        ...gamble,
+        how:"当前已经 +12，只剩 +15 最后一跳。若核心词条命中不错，可以考虑冲满。",
+        text:"当前已 +12，若资源允许且核心词条表现好，可以考虑冲 +15。"
+      };
+    }
+
+    return {
+      ...gamble,
+      how:"当前已经 +12，建议谨慎。除非缺芯核或底子很好，否则不建议硬冲 +15。",
+      text:"当前已 +12，是否继续需要看资源和当前缺口。"
+    };
+  }
+
+  // +9：下一步是 +12
+  if(level === 9){
+    if(isStop){
+      return {
+        ...gamble,
+        how:"当前已经 +9，若已经歪废词条，建议停手，不要继续到 +12。",
+        text:"当前已 +9 且风险较高，建议停止投入。"
+      };
+    }
+
+    if(isGood){
+      return {
+        ...gamble,
+        how:"当前已经 +9，如果前几跳命中核心，可以考虑继续到 +12。",
+        text:"当前已 +9，若核心词条命中不错，可以继续观察到 +12。"
+      };
+    }
+
+    return {
+      ...gamble,
+      how:"当前已经 +9，下一跳到 +12 风险变高。若不是急用，建议先停手观察。",
+      text:"当前已 +9，建议谨慎决定是否继续投入。"
+    };
+  }
+
+  // +6：下一步是 +9
+  if(level === 6){
+    if(isStop){
+      return {
+        ...gamble,
+        how:"当前 +6，如果已经歪到废词条，建议停手，不要继续到 +9。",
+        text:"当前 +6 已出现明显风险，建议及时止损。"
+      };
+    }
+
+    return {
+      ...gamble,
+      how:"当前 +6，可以考虑赌到 +9；如果 +9 歪废词条就停。",
+      text:"当前 +6，仍可观察到 +9。"
+    };
+  }
+
+  // +3：下一步是 +6
+  if(level === 3){
+    if(isStop){
+      return {
+        ...gamble,
+        how:"当前 +3 如果已经歪得明显，建议停手，不要继续喂资源。",
+        text:"当前 +3 已出现风险，建议谨慎。"
+      };
+    }
+
+    return {
+      ...gamble,
+      how:"当前 +3，可以继续到 +6 看第二跳是否命中核心。",
+      text:"当前 +3，可继续小赌到 +6。"
+    };
+  }
+
+  // +0：胚子阶段
+  if(level === 0){
+    if(isStop){
+      return {
+        ...gamble,
+        how:"当前 +0 底子已经不太理想，不建议开赌。",
+        text:"当前为 +0 胚子，但底子偏差，不建议投入资源。"
+      };
+    }
+
+    if(isGood){
+      return {
+        ...gamble,
+        how:"当前 +0 底子不错，可以先赌到 +3/+6 看是否命中核心词条。",
+        text:"当前为 +0 好胚子，可以先小赌。"
+      };
+    }
+
+    return {
+      ...gamble,
+      how:"当前 +0，可以先赌到 +3；如果没出有效词条就停。",
+      text:"当前为 +0 胚子，建议小赌观察。"
+    };
+  }
+
+  return gamble;
 }
 
 function gambleAdvice(ctx){
@@ -789,10 +933,11 @@ function render(score,rankObj,reasons,gamble,info){
   });
 
   document.getElementById("tipsBox").innerHTML=`
-    <strong>当前结论：</strong>${gamble.text}<br>
-    <strong>当前类型：</strong>${currentCardType()}芯核 / ${val("position")} 位<br>
-    <strong>当前流派：</strong>${info.p.title}
-  `;
+  <strong>当前结论：</strong>${gamble.text}<br>
+  <strong>当前类型：</strong>${currentCardType()}芯核 / ${val("position")} 位<br>
+  <strong>当前流派：</strong>${info.p.title}<br>
+  <strong>说明：</strong>本工具按当前使用身份判断收益，星谱颜色不参与评分。
+`;
 
   document.getElementById("shortShare").value=shortText(score,rankObj,gamble,info);
   document.getElementById("detailShare").value=detailText(score,rankObj,gamble,info,reasons);
@@ -804,18 +949,16 @@ function subText(info){
 
 function shortText(score,rankObj,gamble,info){
   return `【结论】${gamble.short}。
-适合：夏以昼-${info.b.name}，${currentCardType()}${val("position")}位，${val("buildType")}。
+适配判断：夏以昼-${info.b.name}，${currentCardType()}${val("position")}位，${val("buildType")}。
 能赌吗：${gamble.can}；好赌吗：${gamble.level}。
 怎么赌：${gamble.how}`;
 }
 
 function detailText(score,rankObj,gamble,info,reasons){
-  const color=val("color")==="自动"?`${info.b.color}（自动）`:val("color");
   return `【评分细则】
 
 搭档：夏以昼
-身份：${info.b.name} / ${info.b.alias}
-星谱：${color}
+当前使用身份：${info.b.name} / ${info.b.alias}
 芯核类型：${currentCardType()}
 位置：${val("position")}
 阶数：${val("rankLv")}
