@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>芯核能好怎 V0.8.1</title>
+<title>芯核能好怎 V0.8.2</title>
 <style>
 :root{
   --blue:#2f80ed;--blue2:#102a43;--orange:#ff9f43;--bg:#f5f8fc;
@@ -133,9 +133,9 @@ textarea{
 <body>
 <div class="wrap">
 <header class="hero">
-  <div class="tag">💙🧡 芯核能好怎 · V0.8.1</div>
+  <div class="tag">💙🧡 芯核能好怎 · V0.8.2</div>
   <h1>恋与深空简易芯核筛选器</h1>
-  <p>V0.8.1：修正副属性数值输入框，区分百分比与固定值。</p>
+  <p>V0.8.2：修正数值质量判断的显示逻辑，增加明确提示。</p>
 </header>
 
 <main class="layout">
@@ -286,7 +286,7 @@ textarea{
 </div>
 
 <div class="tips" id="tipsBox">
-当前为 V0.8.1：新增词条量统计与数值质量判断。
+当前为 V0.8.2：新增词条量统计与数值质量判断。
 </div>
 
 <h2 style="margin-top:20px;">📋 A. 一句话结论版</h2>
@@ -299,7 +299,7 @@ textarea{
 </aside>
 </main>
 
-<div class="footer">💙🧡 芯核能好怎 V0.8.1 · by 阿泽</div>
+<div class="footer">💙🧡 芯核能好怎 V0.8.2 · by 阿泽</div>
 </div>
 
 <script>
@@ -489,7 +489,15 @@ function buildSubBox(){
     div.className="chip";
 
     const isPercent = percentStats.includes(s);
-    const placeholderText = isPercent ? "数值%(选填)" : "数值(选填)";
+    let placeholderText;
+    if (isPercent && s.includes("加成")) {
+        placeholderText = "数值%(+6以上判断)";
+    } else if (isPercent) {
+        placeholderText = "数值%(暂不判断)";
+    } else {
+        placeholderText = "数值(暂不判断)";
+    }
+    
     let valueInputHTML;
 
     if (isPercent) {
@@ -711,6 +719,12 @@ function judge(){
     if(vq){
       score+=vq.s;
       reasonTxt+=`；数值质量：${vq.q} ${vq.s>=0?"+":""}${vq.s}`;
+    } else if (values[s]) {
+        if (level < 6) {
+            reasonTxt += `；💡提示：当前强化等级低于+6，暂不进行数值质量判断。`;
+        } else if (!s.includes("加成")) {
+            reasonTxt += `；💡提示：当前版本只对“XX加成”类词条进行数值质量判断。`;
+        }
     }
     reasons.push(reasonTxt);
   });
