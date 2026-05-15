@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>芯核能好怎 V0.8.2</title>
+<title>芯核能好怎 V0.9</title>
 <style>
 :root{
   --blue:#2f80ed;--blue2:#102a43;--orange:#ff9f43;--bg:#f5f8fc;
@@ -133,9 +133,9 @@ textarea{
 <body>
 <div class="wrap">
 <header class="hero">
-  <div class="tag">💙🧡 芯核能好怎 · V0.8.2</div>
+  <div class="tag">💙🧡 芯核能好怎 · V0.9</div>
   <h1>恋与深空简易芯核筛选器</h1>
-  <p>V0.8.2：修正数值质量判断的显示逻辑，增加明确提示。</p>
+  <p>V0.9：新增【新手/后期模式】，全面重构三大身份词条优先级，精准对齐攻略组毕业标准。</p>
 </header>
 
 <main class="layout">
@@ -191,6 +191,14 @@ textarea{
   <div>
     <label id="rankLabel">阶数</label>
     <select id="rankLv" onchange="refreshAll()"></select>
+  </div>
+
+  <div>
+    <label>玩家阶段</label>
+    <select id="playerStage" onchange="refreshAll()">
+      <option value="后期">后期 (五星卡为主，追求加成)</option>
+      <option value="新手">新手 (四星卡为主，固定值收益高)</option>
+    </select>
   </div>
 
   <div>
@@ -286,7 +294,7 @@ textarea{
 </div>
 
 <div class="tips" id="tipsBox">
-当前为 V0.8.2：新增词条量统计与数值质量判断。
+当前为 V0.9：新增新手/后期模式，全面重构词条优先级。
 </div>
 
 <h2 style="margin-top:20px;">📋 A. 一句话结论版</h2>
@@ -299,7 +307,7 @@ textarea{
 </aside>
 </main>
 
-<div class="footer">💙🧡 芯核能好怎 V0.8.2 · by 阿泽</div>
+<div class="footer">💙🧡 芯核能好怎 V0.9 · by 阿泽</div>
 </div>
 
 <script>
@@ -345,62 +353,73 @@ function profile(){
   const build=val("buildType");
 
   if(id==="captain"){
+    if(build==="双暴流"){
+      return {
+        title:"执舰官双暴流(逆谱)",
+        core:["防御加成","暴击","暴伤"],
+        good:["防御","攻击加成"],
+        ok:["虚弱增伤","誓约增伤"],
+        low:["攻击"],
+        waste:["生命","生命加成"],
+        note:"逆谱高阶推荐。防御加成与双暴是核心；虚弱增伤优先级下降。"
+      };
+    }
     return {
-      title:"执舰官防御体系",
+      title:"执舰官虚弱/通用流",
       core:["防御加成","虚弱增伤"],
-      good:["防御"],
-      ok:["攻击加成","誓约增伤","攻击","暴击","暴伤"],
-      low:[],
+      good:["防御","攻击加成"],
+      ok:["誓约增伤","暴击"],
+      low:["暴伤","攻击"],
       waste:["生命","生命加成"],
-      note:"防御加成/虚弱增伤是核心；防御可用但强化太多建议暂停。"
-    };
-  }
-
-  if(id==="ghost" && build==="双暴流"){
-    return {
-      title:"鬼王双暴流",
-      core:["暴击","暴伤"],
-      good:["生命加成"],
-      ok:["生命"],
-      low:["攻击加成","虚弱增伤","誓约增伤","攻击"],
-      waste:["防御","防御加成"],
-      note:"暴击/暴伤是核心，生命加成次高，生命少量可用；攻击加成/虚弱增伤/誓约增伤/攻击属于低优先级过渡词条。"
+      note:"纯粹虚弱流。防御加成/虚弱增伤是核心；防御可用但强化太多建议暂停。"
     };
   }
 
   if(id==="ghost"){
+    if(build==="双暴流"){
+      return {
+        title:"鬼王双暴流",
+        core:["暴击","暴伤"],
+        good:["生命加成"],
+        ok:["生命"],
+        low:["攻击加成","虚弱增伤","誓约增伤","攻击"],
+        waste:["防御","防御加成"],
+        note:"暴击/暴伤是核心，生命加成次高，生命少量可用；其余为低优先级过渡。"
+      };
+    }
     return {
       title:"鬼王虚弱/通用流",
       core:["生命加成"],
       good:["生命","攻击加成","虚弱增伤"],
-      ok:["誓约增伤","暴击","暴伤","攻击"],
-      low:[],
+      ok:[],
+      low:["誓约增伤","暴击","暴伤","攻击"],
       waste:["防御","防御加成"],
-      note:"生命加成是核心，生命/攻击加成/虚弱增伤适量可用。"
+      note:"生命加成是绝对核心，生命/攻击加成/虚弱增伤适量可用；双暴等为低优先。"
     };
   }
 
-  if(id==="x02" && build==="双暴流"){
+  if(id==="x02"){
+    if(build==="双暴流"){
+      return {
+        title:"哥达双暴流",
+        core:["暴击","暴伤","攻击加成"],
+        good:["誓约增伤","攻击"],
+        ok:[],
+        low:["虚弱增伤"],
+        waste:["生命","生命加成","防御","防御加成"],
+        note:"暴击/暴伤/攻击加成是核心；强化没打到核心建议及时停。"
+      };
+    }
     return {
-      title:"哥达双暴流",
-      core:["暴击","暴伤","攻击加成"],
-      good:["誓约增伤","攻击"],
-      ok:["虚弱增伤"],
-      low:[],
+      title:"哥达虚弱/通用流",
+      core:["攻击加成"],
+      good:["攻击","虚弱增伤","誓约增伤"],
+      ok:[],
+      low:["暴击","暴伤"],
       waste:["生命","生命加成","防御","防御加成"],
-      note:"暴击/暴伤/攻击加成是核心；强化没打到核心建议及时停。"
+      note:"攻击加成是核心，攻击/虚弱增伤/誓约增伤可用；双暴优先级降低。"
     };
   }
-
-  return {
-    title:"哥达虚弱/通用流",
-    core:["攻击加成"],
-    good:["攻击","虚弱增伤","誓约增伤"],
-    ok:["暴击","暴伤"],
-    low:[],
-    waste:["生命","生命加成","防御","防御加成"],
-    note:"攻击加成是核心，攻击/虚弱增伤/誓约增伤可用。"
-  };
 }
 
 function refreshAll(){
@@ -463,8 +482,11 @@ function updateInfo(){
   const pos=val("position");
   const card=currentCardType();
   const id=val("identity");
+  const stage=val("playerStage");
 
   document.getElementById("ghostModeWrap").style.display=id==="ghost" ? "block" : "none";
+
+  let stageNote = stage === "新手" ? "<br><span style='color:var(--orange)'>💡 新手模式：固定数值（小攻击/生命/防御）评分权重提升，适合前期过渡。</span>" : "";
 
   document.getElementById("identityInfo").innerHTML=`
     <strong>${b.name} / ${b.alias}</strong>
@@ -475,7 +497,7 @@ function updateInfo(){
     </div>
     <div><strong>身份方向：</strong>${b.focus}</div>
     <div><strong>当前规则：</strong>${p.note}</div>
-    <div><strong>说明：</strong>本工具按当前使用身份判断收益；星谱颜色不参与评分。</div>
+    <div><strong>说明：</strong>本工具按当前使用身份判断收益；星谱颜色不参与评分。${stageNote}</div>
   `;
 }
 
@@ -604,8 +626,8 @@ function mainScore(){
   if(pos==="β"){
     let rec=[],txt="";
     if(id==="captain"){
-      rec=rank.startsWith("双0")?["誓约回能","誓约增伤","防御加成"]:["誓约增伤","防御加成","誓约回能","加速回能"];
-      txt="执舰官 β 位通常看誓约增伤/防御加成/回能。";
+      rec=["誓约增伤","防御加成","誓约回能"];
+      txt="执舰官 β 位通常看誓约增伤/防御加成/回能。远空不需要额外加速回能。";
     }
 
     if(id==="ghost"){
@@ -613,12 +635,12 @@ function mainScore(){
         rec=["生命加成","誓约增伤"];
         txt="鬼王不开共鸣时，β 更偏生命加成/誓约增伤。";
       }else{
-        if(rank.startsWith("双0"))rec=["誓约回能","加速回能","生命加成"];
-        else if(rank.startsWith("双1")||rank.startsWith("双2"))rec=["生命加成","誓约回能","誓约增伤","加速回能"];
-        else rec=["誓约增伤","生命加成","誓约回能"];
-        txt="鬼王 β 位随阶数/打法变化，生命加成、誓约增伤、回能均可参考。";
+        if(rank.startsWith("双0")) rec=["加速回能","誓约回能","生命加成"];
+        else if(rank.startsWith("双1")) rec=["生命加成","加速回能","誓约回能"];
+        else if(rank.startsWith("双2")) rec=["生命加成","誓约增伤","誓约回能"];
+        else rec=["誓约增伤","生命加成"];
+        txt="鬼王 β 位随阶数变化，满阶不推荐回能，低阶可带回能。";
       }
-      if(time==="90秒")txt+=" 90秒局可额外关注誓约回能。";
     }
 
     if(id==="x02"){
@@ -634,12 +656,12 @@ function mainScore(){
   if(pos==="δ"){
     let rec=[],txt="";
     if(id==="captain"){
-      if(mode==="逆谱" && rank==="3阶" && build==="双暴流"){
+      if(build==="双暴流"){
         rec=["暴击","暴伤","防御加成","虚弱增伤"];
-        txt="执舰官月卡3阶逆谱可转双暴。";
+        txt="执舰官双暴流 δ 位优先暴击/暴伤。";
       }else{
         rec=["虚弱增伤","防御加成","暴击","暴伤"];
-        txt="执舰官多数 δ 位优先虚弱增伤，其次防御加成。";
+        txt="执舰官虚弱流 δ 位优先虚弱增伤，其次防御加成。";
       }
     }
 
@@ -685,6 +707,7 @@ function judgeValueQuality(statName,value,level){
 function judge(){
   const b=base(),p=profile();
   const level=Number(val("level"));
+  const stage=val("playerStage");
   const subs=selectedSubs(),hits=hitMap(),values=valueMap();
   let score=0,reasons=[];
 
@@ -696,7 +719,16 @@ function judge(){
   if(subs.length===0)reasons.push("未选择副属性，副词条部分不计分。");
 
   subs.forEach(s=>{
-    const t=tier(s,p),h=hits[s]||0;
+    let t=tier(s,p);
+    const h=hits[s]||0;
+    
+    // 新手模式：固定数值收益提升
+    let isNewbieBoost = false;
+    if (stage === "新手" && ["攻击", "生命", "防御"].includes(s) && t.score > 0) {
+        t.score += 3;
+        isNewbieBoost = true;
+    }
+
     score+=t.score;
     totalHits+=h;
     if(t.score>=8)good++;
@@ -711,9 +743,12 @@ function judge(){
       else if(p.ok.includes(s))score+=h*2;
       else if(p.low && p.low.includes(s))score+=h*1;
       else if(p.waste.includes(s))score-=h*6;
+      
+      if (isNewbieBoost) score += h*2; // 新手模式强化固定值额外加分
     }
 
     let reasonTxt=`副属性「${s}」：${t.name}，${t.txt}，基础 ${t.score>=0?"+":""}${t.score}${h?`；强化 ${h} 次`:""}`;
+    if (isNewbieBoost) reasonTxt += ` (新手期固定值收益提升)`;
 
     const vq=judgeValueQuality(s,values[s],level);
     if(vq){
@@ -890,7 +925,7 @@ function render(score,rankObj,reasons,gamble,info){
   ul.innerHTML="";
   reasons.forEach(x=>{
     const li=document.createElement("li");
-    li.textContent=x;
+    li.innerHTML=x; // 使用 innerHTML 以支持 💡 等标签
     ul.appendChild(li);
   });
 
@@ -923,6 +958,7 @@ function detailText(score,rankObj,gamble,info,reasons){
 芯核类型：${currentCardType()}
 位置：${val("position")}
 阶数：${val("rankLv")}
+玩家阶段：${val("playerStage")}
 谱向：${val("spectrumMode")}
 流派：${val("buildType")}
 鬼王打法：${val("identity")==="ghost"?val("ghostMode"):"-"}
@@ -940,7 +976,7 @@ function detailText(score,rankObj,gamble,info,reasons){
 怎么赌：${gamble.how}
 
 理由：
-${reasons.slice(0,10).map((r,i)=>`${i+1}. ${r}`).join("\n")}
+${reasons.slice(0,10).map((r,i)=>`${i+1}. ${r.replace(/<[^>]*>?/gm, '')}`).join("\n")}
 
 ※ 结果仅供参考，请结合练度、队伍、手法与资源情况。`;
 }
