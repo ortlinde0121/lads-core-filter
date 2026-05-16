@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>芯核能好怎 V0.9</title>
+<title>芯核能好怎 V1.0</title>
+<!-- 引入 Tesseract.js 免费前端 OCR 库 -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{
   --blue:#2f80ed;--blue2:#102a43;--orange:#ff9f43;--bg:#f5f8fc;
@@ -127,15 +129,39 @@ textarea{
 .small{width:100%;margin-top:8px;background:#fff0dc;color:#9a4d00}
 .note{font-size:13px;color:var(--muted);line-height:1.7;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:13px;margin-top:22px}
+
+/* OCR 专属样式 */
+.ocr-box {
+  background: linear-gradient(135deg, #fff8f0, #fff);
+  border: 2px dashed var(--orange);
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+.ocr-btn {
+  background: var(--orange);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+.ocr-btn:hover { transform: scale(1.05); }
+.ocr-input { display: none; }
+#ocrStatus { display: none; margin-top: 10px; font-size: 14px; }
 </style>
 </head>
 
 <body>
 <div class="wrap">
 <header class="hero">
-  <div class="tag">💙🧡 芯核能好怎 · V0.9</div>
+  <div class="tag">💙🧡 芯核能好怎 · V1.0 正式版</div>
   <h1>恋与深空简易芯核筛选器</h1>
-  <p>V0.9：新增【新手/后期模式】，全面重构三大身份词条优先级，精准对齐攻略组毕业标准。</p>
+  <p>V1.0 重磅更新：新增【AI 传图自动打勾】黑科技！上传芯核截图，自动识别副属性！</p>
 </header>
 
 <main class="layout">
@@ -260,6 +286,25 @@ textarea{
 </div>
 
 <div class="sec">第五步：副属性 + 强化次数 + 数值</div>
+
+<!-- OCR 传图区域 -->
+<div class="ocr-box">
+  <div style="font-weight: bold; margin-bottom: 10px; color: var(--blue2);">✨ 懒人福音：传图自动打勾 (Beta)</div>
+  <label for="ocrInput" class="ocr-btn">📸 上传芯核截图</label>
+  <input type="file" id="ocrInput" class="ocr-input" accept="image/*" onchange="handleImageUpload(event)">
+  <div style="font-size: 12px; color: var(--muted); margin-top: 5px;">请尽量裁剪只保留属性部分，识别更准哦~</div>
+  
+  <!-- 新增：图片预览区域 -->
+  <img id="ocrPreview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 8px; display: none; border: 1px solid var(--line);" alt="截图预览">
+  
+  <div id="ocrStatus" class="tips"></div>
+  
+  <!-- 新增：明确的附属品提示 -->
+  <div style="margin-top: 12px; font-size: 14px; color: var(--orange); font-weight: bold;">
+    不想传图？直接在下方手动勾选即可 👇
+  </div>
+</div>
+
 <div class="chips" id="subBox"></div>
 
 <div class="btns">
@@ -294,7 +339,7 @@ textarea{
 </div>
 
 <div class="tips" id="tipsBox">
-当前为 V0.9：新增新手/后期模式，全面重构词条优先级。
+当前为 V1.0：新增 AI 传图自动打勾功能！
 </div>
 
 <h2 style="margin-top:20px;">📋 A. 一句话结论版</h2>
@@ -307,7 +352,12 @@ textarea{
 </aside>
 </main>
 
-<div class="footer">💙🧡 芯核能好怎 V0.9 · by 阿泽</div>
+<div class="footer">
+  <div>💙🧡 芯核能好怎 V1.0 · by 阿泽</div>
+  <div style="margin-top: 6px; font-size: 12px; opacity: 0.8;">
+    本项目为免费开源工具，仅供玩家交流使用，请勿用于任何商业盈利或倒卖行为。
+  </div>
+</div>
 </div>
 
 <script>
@@ -335,13 +385,18 @@ const baseRules={
   }
 };
 
-const valueQuality={
-  "XX加成":{
-    6:{normalBelow:7,excellent:10,heirloom:18},
-    9:{normalBelow:10,excellent:14,heirloom:22},
-    12:{normalBelow:13,excellent:18,heirloom:26},
-    15:{normalBelow:15,excellent:22,heirloom:30}
-  }
+// 🌟 全新黑科技：全属性动态数值库 (基于攻略组 v1.1 数据)
+const statData = {
+  "生命": { bMin: 832, bMax: 1188, uMin: 416, uMax: 594 },
+  "攻击": { bMin: 42, bMax: 60, uMin: 21, uMax: 30 },
+  "防御": { bMin: 21, bMax: 30, uMin: 11, uMax: 15 },
+  "暴击": { bMin: 1.1, bMax: 1.6, uMin: 0.6, uMax: 0.8 },
+  "暴伤": { bMin: 2.2, bMax: 3.2, uMin: 1.1, uMax: 1.6 },
+  "虚弱增伤": { bMin: 1.8, bMax: 2.6, uMin: 0.9, uMax: 1.3 },
+  "誓约增伤": { bMin: 0.8, bMax: 1.2, uMin: 0.4, uMax: 0.6 },
+  "生命加成": { bMin: 7.0, bMax: 10.0, uMin: 3.5, uMax: 5.0 },
+  "攻击加成": { bMin: 7.0, bMax: 10.0, uMin: 3.5, uMax: 5.0 },
+  "防御加成": { bMin: 7.0, bMax: 10.0, uMin: 3.5, uMax: 5.0 }
 };
 
 function val(id){return document.getElementById(id).value}
@@ -511,14 +566,8 @@ function buildSubBox(){
     div.className="chip";
 
     const isPercent = percentStats.includes(s);
-    let placeholderText;
-    if (isPercent && s.includes("加成")) {
-        placeholderText = "数值%(+6以上判断)";
-    } else if (isPercent) {
-        placeholderText = "数值%(暂不判断)";
-    } else {
-        placeholderText = "数值(暂不判断)";
-    }
+    // 🌟 占位符更新：现在所有属性都能自动评价了！
+    const placeholderText = isPercent ? "数值%(自动评价)" : "数值(自动评价)";
     
     let valueInputHTML;
 
@@ -567,6 +616,88 @@ function toggleChip(input){
     box.querySelector("input").value="";
   }
 }
+
+// --- OCR 核心逻辑 ---
+async function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const preview = document.getElementById('ocrPreview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'inline-block';
+
+  const statusDiv = document.getElementById('ocrStatus');
+  statusDiv.style.display = 'block';
+  statusDiv.innerHTML = '⏳ 正在准备 AI 识别...<br><span style="font-size:12px;color:#666;">(初次使用需下载语言包，可能需要半分钟，请耐心等待)</span>';
+  statusDiv.style.background = '#d8ecff';
+  statusDiv.style.color = '#102a43';
+
+  try {
+    const result = await Tesseract.recognize(file, 'chi_sim', {
+      logger: m => {
+        if (m.status === 'loading tesseract core') {
+           statusDiv.innerHTML = `⏳ 正在加载 AI 核心组件...`;
+        } else if (m.status === 'loading language traineddata') {
+           statusDiv.innerHTML = `⏳ 正在下载中文语言包... 进度: ${Math.round(m.progress * 100)}%<br><span style="font-size:12px;color:#666;">(仅首次需要下载，以后就快啦！)</span>`;
+        } else if (m.status === 'recognizing text') {
+          statusDiv.innerHTML = `🔍 正在努力看图中... 进度: ${Math.round(m.progress * 100)}%`;
+        }
+      }
+    });
+
+    let text = result.data.text;
+    text = text.replace(/\s+/g, ''); 
+    text = text.replace(/哲约/g, '誓约');
+    text = text.replace(/暂约/g, '誓约');
+    text = text.replace(/虑弱/g, '虚弱');
+    text = text.replace(/攻去/g, '攻击');
+    text = text.replace(/攻古/g, '攻击');
+    text = text.replace(/暴去/g, '暴击');
+
+    let foundStats = [];
+    const sortedStats = [...subStats].sort((a, b) => b.length - a.length);
+    
+    sortedStats.forEach(stat => {
+      if (text.includes(stat)) {
+        foundStats.push(stat);
+        text = text.replace(stat, ''); 
+      }
+    });
+
+    if (foundStats.length > 0) {
+      document.querySelectorAll("#subBox input[type=checkbox]").forEach(i => {
+        if(i.checked) {
+          i.checked = false;
+          toggleChip(i);
+        }
+      });
+
+      foundStats.forEach(stat => {
+        const checkbox = document.querySelector(`#subBox input[type=checkbox][value="${stat}"]`);
+        if (checkbox && !checkbox.checked) {
+          checkbox.checked = true;
+          toggleChip(checkbox);
+        }
+      });
+
+      statusDiv.innerHTML = `✅ 识别成功！已自动勾选：${foundStats.join('、')}。<br><strong style="color:var(--red)">⚠️ 请务必核对，并手动填写强化次数！</strong>`;
+      statusDiv.style.background = '#dcfce7';
+      statusDiv.style.color = '#166534';
+    } else {
+      statusDiv.innerHTML = `❌ 哎呀，没认出副属性。请确保截图清晰且包含属性文字哦！`;
+      statusDiv.style.background = '#fee2e2';
+      statusDiv.style.color = '#991b1b';
+    }
+
+  } catch (error) {
+    statusDiv.innerHTML = `❌ 识别出错了：${error.message}`;
+    statusDiv.style.background = '#fee2e2';
+    statusDiv.style.color = '#991b1b';
+  } finally {
+    event.target.value = '';
+  }
+}
+// --- OCR 逻辑结束 ---
 
 function selectedSubs(){
   return [...document.querySelectorAll("#subBox input[type=checkbox]:checked")].map(i=>i.value);
@@ -691,17 +822,22 @@ function mainScore(){
   }
 }
 
-function judgeValueQuality(statName,value,level){
-  const isPercent=statName.includes("加成");
-  if(!isPercent || !value) return null;
+// 🌟 全新黑科技：基于强化次数的动态数值评价
+function judgeValueQuality(statName, value, hits) {
+  if (!value) return null;
+  const data = statData[statName];
+  if (!data) return null;
 
-  const rule=valueQuality["XX加成"][level];
-  if(!rule) return null;
+  // 计算该词条在当前强化次数下的理论最大值和最小值
+  const maxVal = data.bMax + hits * data.uMax;
+  const minVal = data.bMin + hits * data.uMin;
+  const range = maxVal - minVal;
 
-  if(value>=rule.heirloom)return {q:"传家宝",s:8};
-  if(value>=rule.excellent)return {q:"优秀",s:5};
-  if(value<rule.normalBelow)return {q:"偏低",s:-2};
-  return {q:"普通",s:2};
+  // 动态评级：接近理论上限为传家宝，高于平均为优秀，低于平均下限为偏低
+  if (value >= maxVal - range * 0.15) return { q: "传家宝", s: 8 };
+  if (value >= maxVal - range * 0.5) return { q: "优秀", s: 5 };
+  if (value < minVal + range * 0.2) return { q: "偏低", s: -2 };
+  return { q: "普通", s: 2 };
 }
 
 function judge(){
@@ -722,7 +858,6 @@ function judge(){
     let t=tier(s,p);
     const h=hits[s]||0;
     
-    // 新手模式：固定数值收益提升
     let isNewbieBoost = false;
     if (stage === "新手" && ["攻击", "生命", "防御"].includes(s) && t.score > 0) {
         t.score += 3;
@@ -744,22 +879,17 @@ function judge(){
       else if(p.low && p.low.includes(s))score+=h*1;
       else if(p.waste.includes(s))score-=h*6;
       
-      if (isNewbieBoost) score += h*2; // 新手模式强化固定值额外加分
+      if (isNewbieBoost) score += h*2; 
     }
 
     let reasonTxt=`副属性「${s}」：${t.name}，${t.txt}，基础 ${t.score>=0?"+":""}${t.score}${h?`；强化 ${h} 次`:""}`;
     if (isNewbieBoost) reasonTxt += ` (新手期固定值收益提升)`;
 
-    const vq=judgeValueQuality(s,values[s],level);
+    // 🌟 传入强化次数 h，而不是总等级 level
+    const vq=judgeValueQuality(s, values[s], h);
     if(vq){
       score+=vq.s;
       reasonTxt+=`；数值质量：${vq.q} ${vq.s>=0?"+":""}${vq.s}`;
-    } else if (values[s]) {
-        if (level < 6) {
-            reasonTxt += `；💡提示：当前强化等级低于+6，暂不进行数值质量判断。`;
-        } else if (!s.includes("加成")) {
-            reasonTxt += `；💡提示：当前版本只对“XX加成”类词条进行数值质量判断。`;
-        }
     }
     reasons.push(reasonTxt);
   });
@@ -925,7 +1055,7 @@ function render(score,rankObj,reasons,gamble,info){
   ul.innerHTML="";
   reasons.forEach(x=>{
     const li=document.createElement("li");
-    li.innerHTML=x; // 使用 innerHTML 以支持 💡 等标签
+    li.innerHTML=x; 
     ul.appendChild(li);
   });
 
