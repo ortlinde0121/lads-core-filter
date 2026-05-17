@@ -3,15 +3,36 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>芯核能好怎 V1.0</title>
+<title>芯核能好怎 V1.1</title>
 <!-- 引入 Tesseract.js 免费前端 OCR 库 -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{
-  --blue:#2f80ed;--blue2:#102a43;--orange:#ff9f43;--bg:#f5f8fc;
-  --line:#d8e2ef;--text:#1f2933;--muted:#667085;
-  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--purple:#8b5cf6;
-  --shadow:0 12px 28px rgba(16,42,67,.12);
+  /* 默认夏以昼主题变量 */
+  --blue: #2f80ed; 
+  --blue2: #102a43; 
+  --orange: #ff9f43; 
+  --bg: #f5f8fc;
+  --light-blue: #d8ecff; 
+  --light-bg: #f8fbff;
+  --chip-g1: rgba(47,128,237,.12); 
+  --chip-g2: rgba(255,159,67,.18);
+  --focus-ring: rgba(47,128,237,.12);
+  
+  /* 新增：浅橙色和深棕色变量（用于按钮和列表） */
+  --light-orange: #fff0dc;
+  --dark-orange: #9a4d00;
+  --ocr-bg: #fff8f0;
+  
+  /* 通用颜色 */
+  --line: #d8e2ef; 
+  --text: #1f2933; 
+  --muted: #667085;
+  --green: #22c55e; 
+  --red: #ef4444; 
+  --yellow: #f59e0b; 
+  --purple: #8b5cf6;
+  --shadow: 0 12px 28px rgba(16,42,67,.12);
 }
 *{box-sizing:border-box}
 body{
@@ -22,16 +43,19 @@ body{
     radial-gradient(circle at top right,rgba(255,159,67,.2),transparent 30%),
     var(--bg);
   color:var(--text);
+  transition: background 0.5s ease;
 }
 .wrap{max-width:1180px;margin:auto;padding:26px 14px 48px}
 .hero{
   background:linear-gradient(135deg,var(--blue2),var(--blue));
   color:white;border-radius:28px;padding:28px;box-shadow:var(--shadow);
   position:relative;overflow:hidden;margin-bottom:18px;
+  transition: background 0.5s ease;
 }
 .hero:after{
   content:"";position:absolute;right:-60px;top:-70px;width:230px;height:230px;
-  border-radius:50%;background:rgba(255,159,67,.85);
+  border-radius:50%;background:var(--orange);opacity:0.85;
+  transition: background 0.5s ease;
 }
 .hero h1,.hero p,.tag{position:relative;z-index:1}
 .hero h1{margin:0 0 8px}
@@ -46,16 +70,16 @@ body{
   background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:24px;
   padding:20px;box-shadow:var(--shadow);backdrop-filter:blur(8px);
 }
-h2{margin:0 0 15px;color:var(--blue2);font-size:20px}
-.sec{margin:20px 0 10px;font-weight:800;color:var(--blue2);border-left:5px solid var(--orange);padding-left:10px}
+h2{margin:0 0 15px;color:var(--blue2);font-size:20px; transition: color 0.3s;}
+.sec{margin:20px 0 10px;font-weight:800;color:var(--blue2);border-left:5px solid var(--orange);padding-left:10px; transition: all 0.3s;}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:560px){.grid{grid-template-columns:1fr}}
 label{display:block;font-weight:700;font-size:14px;margin-bottom:6px;color:#334155}
 select,input[type="number"]{
   width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;
-  background:#fff;font-size:15px;outline:none;
+  background:#fff;font-size:15px;outline:none; transition: all 0.3s;
 }
-select:focus,input[type="number"]:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,128,237,.12)}
+select:focus,input[type="number"]:focus{border-color:var(--blue);box-shadow:0 0 0 4px var(--focus-ring)}
 .value-wrapper {
   position: relative;
   display: flex;
@@ -72,29 +96,30 @@ select:focus,input[type="number"]:focus{border-color:var(--blue);box-shadow:0 0 
 }
 .info{
   margin-top:12px;border:1px solid var(--line);border-radius:18px;padding:13px;
-  background:linear-gradient(180deg,#fff,#f8fbff);font-size:14px;line-height:1.7;
+  background:linear-gradient(180deg,#fff,var(--light-bg));font-size:14px;line-height:1.7;
+  transition: background 0.3s;
 }
 .pills{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-.pill{background:#fff0dc;color:#9a4d00;padding:5px 10px;border-radius:999px;font-size:13px;font-weight:800}
-.pill.b{background:#d8ecff;color:#102a43}
+.pill{background:var(--light-orange);color:var(--dark-orange);padding:5px 10px;border-radius:999px;font-size:13px;font-weight:800; transition: all 0.3s;}
+.pill.b{background:var(--light-blue);color:var(--blue2); transition: all 0.3s;}
 .chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
-.chip{border:1px solid var(--line);border-radius:16px;padding:10px;background:white}
+.chip{border:1px solid var(--line);border-radius:16px;padding:10px;background:white; transition: all 0.3s;}
 .chipHead{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:800}
 .chipHead input{width:16px;height:16px}
 .extra-inputs{margin-top:8px;display:none;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .extra-inputs input,.extra-inputs select{padding:8px;font-size:13px}
-.chip.active{border-color:transparent;background:linear-gradient(135deg,rgba(47,128,237,.12),rgba(255,159,67,.18))}
+.chip.active{border-color:transparent;background:linear-gradient(135deg,var(--chip-g1),var(--chip-g2))}
 .btns{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
 button{
   border:none;border-radius:16px;padding:13px 18px;font-size:15px;font-weight:900;
   cursor:pointer;transition:.2s;
 }
 .primary{background:linear-gradient(135deg,var(--blue),var(--orange));color:white;flex:1}
-.secondary{background:#d8ecff;color:#102a43}
+.secondary{background:var(--light-blue);color:var(--blue2)}
 button:hover{transform:translateY(-1px)}
 .result{
   border:1px solid var(--line);border-radius:22px;padding:18px;
-  background:linear-gradient(180deg,#fff,#f8fbff);
+  background:linear-gradient(180deg,#fff,var(--light-bg)); transition: background 0.3s;
 }
 .circle{
   width:118px;height:118px;border-radius:50%;margin:6px auto 16px;
@@ -102,42 +127,45 @@ button:hover{transform:translateY(-1px)}
   display:flex;align-items:center;justify-content:center;position:relative;
 }
 .circle:before{content:"";position:absolute;width:88px;height:88px;background:white;border-radius:50%}
-.score{position:relative;z-index:1;text-align:center;font-weight:900;color:var(--blue2)}
+.score{position:relative;z-index:1;text-align:center;font-weight:900;color:var(--blue2); transition: color 0.3s;}
 .score strong{display:block;font-size:28px}
 .rank{text-align:center;font-size:23px;font-weight:900;margin-bottom:8px}
 .s{color:var(--green)}.a{color:var(--blue)}.b{color:var(--yellow)}.c{color:var(--purple)}.d{color:var(--red)}
 .desc{text-align:center;color:var(--muted);line-height:1.6;margin-bottom:14px}
 .quick{
-  background:#d8ecff;
+  background:var(--light-blue);
   border-radius:16px;
   padding:13px;
   line-height:1.8;
-  color:#102a43;
+  color:var(--blue2);
   font-size:14px;
   margin-bottom:12px;
+  transition: all 0.3s;
 }
 ul{padding:0;margin:0;list-style:none}
 li{
-  background:#fff0dc;border-left:5px solid var(--orange);padding:9px 11px;
+  background:var(--light-orange);border-left:5px solid var(--orange);padding:9px 11px;
   border-radius:12px;margin-bottom:8px;font-size:14px;line-height:1.55;
+  transition: all 0.3s;
 }
-.tips{margin-top:14px;background:#d8ecff;color:#102a43;padding:13px;border-radius:16px;line-height:1.7;font-size:14px}
+.tips{margin-top:14px;background:var(--light-blue);color:var(--blue2);padding:13px;border-radius:16px;line-height:1.7;font-size:14px; transition: all 0.3s;}
 textarea{
   width:100%;min-height:95px;border:1px solid var(--line);border-radius:16px;
   padding:12px;font-size:14px;line-height:1.65;resize:vertical;
 }
-.small{width:100%;margin-top:8px;background:#fff0dc;color:#9a4d00}
+.small{width:100%;margin-top:8px;background:var(--light-orange);color:var(--dark-orange); transition: all 0.3s;}
 .note{font-size:13px;color:var(--muted);line-height:1.7;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:13px;margin-top:22px}
 
 /* OCR 专属样式 */
 .ocr-box {
-  background: linear-gradient(135deg, #fff8f0, #fff);
+  background: linear-gradient(135deg, var(--ocr-bg), #fff);
   border: 2px dashed var(--orange);
   border-radius: 16px;
   padding: 15px;
   margin-bottom: 15px;
   text-align: center;
+  transition: all 0.3s;
 }
 .ocr-btn {
   background: var(--orange);
@@ -159,9 +187,9 @@ textarea{
 <body>
 <div class="wrap">
 <header class="hero">
-  <div class="tag">💙🧡 芯核能好怎 · V1.0 正式版</div>
+  <div class="tag"><span class="theme-emoji">💙🧡</span> 芯核能好怎 · V1.1 多男主更新版</div>
   <h1>恋与深空简易芯核筛选器</h1>
-  <p>V1.0 重磅更新：新增【AI 传图自动打勾】黑科技！上传芯核截图，自动识别副属性！</p>
+  <p>V1.1 重磅更新：新增多男主动态主题！秦彻三大身份（恶魔/龙彻/掠心）全面实装！</p>
 </header>
 
 <main class="layout">
@@ -171,13 +199,13 @@ textarea{
 <div class="sec">第一步：选择当前使用身份</div>
 <div class="grid">
   <div>
-    <label>男主</label>
-    <select id="boy">
-      <option>夏以昼</option>
-      <option disabled>沈星回 - 开发中</option>
-      <option disabled>黎深 - 开发中</option>
-      <option disabled>祁煜 - 开发中</option>
-      <option disabled>秦彻 - 开发中</option>
+        <label>男主</label>
+    <select id="boy" onchange="changeBoy()">
+      <option value="夏以昼">夏以昼</option>
+      <option value="秦彻">秦彻</option>
+      <option value="沈星回">沈星回 (开发中)</option>
+      <option value="黎深">黎深 (开发中)</option>
+      <option value="祁煜">祁煜 (开发中)</option>
     </select>
   </div>
   <div>
@@ -294,12 +322,10 @@ textarea{
   <input type="file" id="ocrInput" class="ocr-input" accept="image/*" onchange="handleImageUpload(event)">
   <div style="font-size: 12px; color: var(--muted); margin-top: 5px;">请尽量裁剪只保留属性部分，识别更准哦~</div>
   
-  <!-- 新增：图片预览区域 -->
   <img id="ocrPreview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 8px; display: none; border: 1px solid var(--line);" alt="截图预览">
   
   <div id="ocrStatus" class="tips"></div>
   
-  <!-- 新增：明确的附属品提示 -->
   <div style="margin-top: 12px; font-size: 14px; color: var(--orange); font-weight: bold;">
     不想传图？直接在下方手动勾选即可 👇
   </div>
@@ -339,7 +365,7 @@ textarea{
 </div>
 
 <div class="tips" id="tipsBox">
-当前为 V1.0：新增 AI 传图自动打勾功能！
+当前为 V1.1：秦彻三大身份数据已全面实装！
 </div>
 
 <h2 style="margin-top:20px;">📋 A. 一句话结论版</h2>
@@ -353,7 +379,7 @@ textarea{
 </main>
 
 <div class="footer">
-  <div>💙🧡 芯核能好怎 V1.0 · by 阿泽</div>
+  <div><span class="theme-emoji">💙🧡</span> 芯核能好怎 V1.1 · by 阿泽</div>
   <div style="margin-top: 6px; font-size: 12px; opacity: 0.8;">
     本项目为免费开源工具，仅供玩家交流使用，请勿用于任何商业盈利或倒卖行为。
   </div>
@@ -361,6 +387,56 @@ textarea{
 </div>
 
 <script>
+// 🌟 动态主题颜色配置 (绝美马卡龙 + 绝对安全端水版)
+const themeColors = {
+  "夏以昼": {
+    "--blue": "#2f80ed", "--blue2": "#102a43", "--orange": "#ff9f43", "--bg": "#f5f8fc",
+    "--light-blue": "#d8ecff", "--light-bg": "#f8fbff", "--chip-g1": "rgba(47,128,237,.12)", "--chip-g2": "rgba(255,159,67,.18)",
+    "--focus-ring": "rgba(47,128,237,.12)", "--light-orange": "#fff0dc", "--dark-orange": "#9a4d00", "--ocr-bg": "#fff8f0",
+    "grad1": "rgba(47,128,237,.18)", "grad2": "rgba(255,159,67,.2)", "emoji": "💙🧡"
+  },
+  "秦彻": {
+    "--blue": "#dc2626", "--blue2": "#1a1a1a", "--orange": "#7f1d1d", "--bg": "#fef2f2",
+    "--light-blue": "#fee2e2", "--light-bg": "#fff5f5", "--chip-g1": "rgba(220,38,38,.12)", "--chip-g2": "rgba(127,29,29,.18)",
+    "--focus-ring": "rgba(220,38,38,.15)", "--light-orange": "#fee2e2", "--dark-orange": "#7f1d1d", "--ocr-bg": "#fff5f5",
+    "grad1": "rgba(220,38,38,.15)", "grad2": "rgba(0,0,0,.15)", "emoji": "❤️🖤"
+  },
+  "沈星回": {
+    "--blue": "#8b5cf6", "--blue2": "#2e1065", "--orange": "#c084fc", "--bg": "#faf5ff",
+    "--light-blue": "#f3e8ff", "--light-bg": "#fdf4ff", "--chip-g1": "rgba(139,92,246,.12)", "--chip-g2": "rgba(192,132,252,.18)",
+    "--focus-ring": "rgba(139,92,246,.15)", "--light-orange": "#f3e8ff", "--dark-orange": "#581c87", "--ocr-bg": "#faf5ff",
+    "grad1": "rgba(139,92,246,.15)", "grad2": "rgba(192,132,252,.15)", "emoji": "🌌💜"
+  },
+  "黎深": {
+    "--blue": "#38bdf8", "--blue2": "#082f49", "--orange": "#bdfeff", "--bg": "#f0fdfa",
+    "--light-blue": "#d0f6f3", "--light-bg": "#f0fdfa", "--chip-g1": "rgba(189,254,255,.5)", "--chip-g2": "rgba(208,246,243,.6)",
+    "--focus-ring": "rgba(189,254,255,.5)", "--light-orange": "#d0f6f3", "--dark-orange": "#0f766e", "--ocr-bg": "#f0fdfa",
+    "grad1": "rgba(189,254,255,.6)", "grad2": "rgba(208,246,243,.6)", "emoji": "❄️🧊"
+  },
+  "祁煜": {
+    "--blue": "#f472b6", "--blue2": "#831843", "--orange": "#ffbdd4", "--bg": "#fff5f8",
+    "--light-blue": "#fadbe6", "--light-bg": "#fff0f5", "--chip-g1": "rgba(255,189,212,.4)", "--chip-g2": "rgba(250,219,230,.6)",
+    "--focus-ring": "rgba(255,189,212,.5)", "--light-orange": "#fadbe6", "--dark-orange": "#9d174d", "--ocr-bg": "#fff0f5",
+    "grad1": "rgba(255,189,212,.5)", "grad2": "rgba(250,219,230,.6)", "emoji": "🎨💖"
+  }
+};
+
+const boyIdentities = {
+  "夏以昼": [
+    { value: "ghost", text: "冥罗之主 / 鬼王（绿珥）" },
+    { value: "x02", text: "终极兵器 X-02 / 哥达（紫辉）" },
+    { value: "captain", text: "远空执舰官（红漪）" }
+  ],
+  "秦彻": [
+    { value: "qin_demon", text: "银翼恶魔 / 恶魔彻（蓝弧）" },
+    { value: "qin_dragon", text: "深渊主宰 / 龙彻（绿珥）" },
+    { value: "qin_plunderer", text: "无尽掠夺者 / 掠心（粉珀）" }
+  ],
+  "沈星回": [ { value: "shen_placeholder", text: "沈星回流派 - 待更新" } ],
+  "黎深": [ { value: "li_placeholder", text: "黎深流派 - 待更新" } ],
+  "祁煜": [ { value: "qi_placeholder", text: "祁煜流派 - 待更新" } ]
+};
+
 const corePools={
   "α":{card:"日卡",desc:"日卡左芯核，主属性固定生命",main:["生命"]},
   "β":{card:"日卡",desc:"日卡右芯核，方块/功能位",main:["生命加成","攻击加成","防御加成","加速回能","誓约回能","誓约增伤"]},
@@ -371,21 +447,17 @@ const corePools={
 const subStats=["生命","生命加成","攻击","攻击加成","防御","防御加成","暴击","暴伤","誓约增伤","虚弱增伤"];
 
 const baseRules={
-  captain:{
-    name:"远空执舰官",alias:"执舰官",
-    focus:"防御体系。核心偏防御加成 / 虚弱增伤 / 防御。"
-  },
-  ghost:{
-    name:"冥罗之主",alias:"鬼王",
-    focus:"生命体系。虚弱流偏生命加成，双暴流偏暴击/暴伤。"
-  },
-  x02:{
-    name:"终极兵器 X-02",alias:"哥达",
-    focus:"攻击体系。虚弱流偏攻击加成/虚弱，双暴流偏暴击/暴伤/攻击加成。"
-  }
+  captain:{ name:"远空执舰官",alias:"执舰官", focus:"防御体系。核心偏防御加成 / 虚弱增伤 / 防御。" },
+  ghost:{ name:"冥罗之主",alias:"鬼王", focus:"生命体系。虚弱流偏生命加成，双暴流偏暴击/暴伤。" },
+  x02:{ name:"终极兵器 X-02",alias:"哥达", focus:"攻击体系。虚弱流偏攻击加成/虚弱，双暴流偏暴击/暴伤/攻击加成。" },
+  qin_demon:{ name:"银翼恶魔",alias:"恶魔彻", focus:"防御体系。虚弱流偏防御加成/虚弱，双暴流偏防御加成/双暴。" },
+  qin_dragon:{ name:"深渊主宰",alias:"龙彻", focus:"生命体系。虚弱流偏生命加成/虚弱，双暴流偏生命加成/双暴。" },
+  qin_plunderer:{ name:"无尽掠夺者",alias:"掠心", focus:"攻击体系。主推双暴流，偏攻击加成/双暴。" },
+  shen_placeholder:{ name:"沈星回",alias:"星回", focus:"【数据待更新】等待攻略组授权中..." },
+  li_placeholder:{ name:"黎深",alias:"黎医生", focus:"【数据待更新】等待攻略组授权中..." },
+  qi_placeholder:{ name:"祁煜",alias:"鱼鱼", focus:"【数据待更新】等待攻略组授权中..." }
 };
 
-// 🌟 全新黑科技：全属性动态数值库 (基于攻略组 v1.1 数据)
 const statData = {
   "生命": { bMin: 832, bMax: 1188, uMin: 416, uMax: 594 },
   "攻击": { bMin: 42, bMax: 60, uMin: 21, uMax: 30 },
@@ -403,77 +475,92 @@ function val(id){return document.getElementById(id).value}
 function base(){return baseRules[val("identity")]}
 function currentCardType(){return corePools[val("position")].card}
 
+function changeBoy() {
+  const boy = val("boy");
+  const theme = themeColors[boy] || themeColors["夏以昼"];
+  
+  const root = document.documentElement;
+  root.style.setProperty('--blue', theme["--blue"]);
+  root.style.setProperty('--blue2', theme["--blue2"]);
+  root.style.setProperty('--orange', theme["--orange"]);
+  root.style.setProperty('--bg', theme["--bg"]);
+  root.style.setProperty('--light-blue', theme["--light-blue"]);
+  root.style.setProperty('--light-bg', theme["--light-bg"]);
+  root.style.setProperty('--chip-g1', theme["--chip-g1"]);
+  root.style.setProperty('--chip-g2', theme["--chip-g2"]);
+  root.style.setProperty('--focus-ring', theme["--focus-ring"]);
+  root.style.setProperty('--light-orange', theme["--light-orange"]);
+  root.style.setProperty('--dark-orange', theme["--dark-orange"]);
+  root.style.setProperty('--ocr-bg', theme["--ocr-bg"]);
+  
+  document.body.style.background = `radial-gradient(circle at top left, ${theme.grad1}, transparent 28%), radial-gradient(circle at top right, ${theme.grad2}, transparent 30%), var(--bg)`;
+
+  document.querySelectorAll('.theme-emoji').forEach(el => {
+    el.textContent = theme.emoji;
+  });
+
+  const idSelect = document.getElementById("identity");
+  idSelect.innerHTML = "";
+  boyIdentities[boy].forEach(item => {
+    const op = document.createElement("option");
+    op.value = item.value;
+    op.textContent = item.text;
+    idSelect.appendChild(op);
+  });
+
+  resetAll();
+}
+
 function profile(){
   const id=val("identity");
   const build=val("buildType");
 
+  if(id.startsWith("shen_") || id.startsWith("li_") || id.startsWith("qi_")){
+    return {
+      title:"流派 (待更新)",
+      core:[], good:[], ok:[], low:[], waste:[],
+      note:"该男主的芯核数据正在等待攻略组授权，当前仅为占位外壳，评分不具备参考价值哦！"
+    };
+  }
+
+  // 夏以昼
   if(id==="captain"){
     if(build==="双暴流"){
-      return {
-        title:"执舰官双暴流(逆谱)",
-        core:["防御加成","暴击","暴伤"],
-        good:["防御","攻击加成"],
-        ok:["虚弱增伤","誓约增伤"],
-        low:["攻击"],
-        waste:["生命","生命加成"],
-        note:"逆谱高阶推荐。防御加成与双暴是核心；虚弱增伤优先级下降。"
-      };
+      return { title:"执舰官双暴流(逆谱)", core:["防御加成","暴击","暴伤"], good:["防御","攻击加成"], ok:["虚弱增伤","誓约增伤"], low:["攻击"], waste:["生命","生命加成"], note:"逆谱高阶推荐。防御加成与双暴是核心；虚弱增伤优先级下降。" };
     }
-    return {
-      title:"执舰官虚弱/通用流",
-      core:["防御加成","虚弱增伤"],
-      good:["防御","攻击加成"],
-      ok:["誓约增伤","暴击"],
-      low:["暴伤","攻击"],
-      waste:["生命","生命加成"],
-      note:"纯粹虚弱流。防御加成/虚弱增伤是核心；防御可用但强化太多建议暂停。"
-    };
+    return { title:"执舰官虚弱/通用流", core:["防御加成","虚弱增伤"], good:["防御","攻击加成"], ok:["誓约增伤","暴击"], low:["暴伤","攻击"], waste:["生命","生命加成"], note:"纯粹虚弱流。防御加成/虚弱增伤是核心；防御可用但强化太多建议暂停。" };
   }
-
   if(id==="ghost"){
     if(build==="双暴流"){
-      return {
-        title:"鬼王双暴流",
-        core:["暴击","暴伤"],
-        good:["生命加成"],
-        ok:["生命"],
-        low:["攻击加成","虚弱增伤","誓约增伤","攻击"],
-        waste:["防御","防御加成"],
-        note:"暴击/暴伤是核心，生命加成次高，生命少量可用；其余为低优先级过渡。"
-      };
+      return { title:"鬼王双暴流", core:["暴击","暴伤"], good:["生命加成"], ok:["生命"], low:["攻击加成","虚弱增伤","誓约增伤","攻击"], waste:["防御","防御加成"], note:"暴击/暴伤是核心，生命加成次高，生命少量可用；其余为低优先级过渡。" };
     }
-    return {
-      title:"鬼王虚弱/通用流",
-      core:["生命加成"],
-      good:["生命","攻击加成","虚弱增伤"],
-      ok:[],
-      low:["誓约增伤","暴击","暴伤","攻击"],
-      waste:["防御","防御加成"],
-      note:"生命加成是绝对核心，生命/攻击加成/虚弱增伤适量可用；双暴等为低优先。"
-    };
+    return { title:"鬼王虚弱/通用流", core:["生命加成"], good:["生命","攻击加成","虚弱增伤"], ok:[], low:["誓约增伤","暴击","暴伤","攻击"], waste:["防御","防御加成"], note:"生命加成是绝对核心，生命/攻击加成/虚弱增伤适量可用；双暴等为低优先。" };
   }
-
   if(id==="x02"){
     if(build==="双暴流"){
-      return {
-        title:"哥达双暴流",
-        core:["暴击","暴伤","攻击加成"],
-        good:["誓约增伤","攻击"],
-        ok:[],
-        low:["虚弱增伤"],
-        waste:["生命","生命加成","防御","防御加成"],
-        note:"暴击/暴伤/攻击加成是核心；强化没打到核心建议及时停。"
-      };
+      return { title:"哥达双暴流", core:["暴击","暴伤","攻击加成"], good:["誓约增伤","攻击"], ok:[], low:["虚弱增伤"], waste:["生命","生命加成","防御","防御加成"], note:"暴击/暴伤/攻击加成是核心；强化没打到核心建议及时停。" };
     }
-    return {
-      title:"哥达虚弱/通用流",
-      core:["攻击加成"],
-      good:["攻击","虚弱增伤","誓约增伤"],
-      ok:[],
-      low:["暴击","暴伤"],
-      waste:["生命","生命加成","防御","防御加成"],
-      note:"攻击加成是核心，攻击/虚弱增伤/誓约增伤可用；双暴优先级降低。"
-    };
+    return { title:"哥达虚弱/通用流", core:["攻击加成"], good:["攻击","虚弱增伤","誓约增伤"], ok:[], low:["暴击","暴伤"], waste:["生命","生命加成","防御","防御加成"], note:"攻击加成是核心，攻击/虚弱增伤/誓约增伤可用；双暴优先级降低。" };
+  }
+
+  // 秦彻
+  if(id==="qin_demon"){
+    if(build==="双暴流"){
+      return { title:"恶魔彻双暴流", core:["防御加成","暴击","暴伤"], good:["防御"], ok:["攻击加成","攻击"], low:["虚弱增伤","誓约增伤"], waste:["生命","生命加成"], note:"防御加成与双暴是核心；生命类为废词条。" };
+    }
+    return { title:"恶魔彻虚弱/通用流", core:["防御加成","虚弱增伤"], good:["防御","攻击加成"], ok:["誓约增伤","攻击","暴击"], low:["暴伤"], waste:["生命","生命加成"], note:"防御加成与虚弱增伤是核心；生命类为废词条。" };
+  }
+  if(id==="qin_dragon"){
+    if(build==="双暴流"){
+      return { title:"龙彻双暴流", core:["生命加成","暴击","暴伤"], good:["生命"], ok:["攻击加成","攻击"], low:["虚弱增伤","誓约增伤"], waste:["防御","防御加成"], note:"生命加成与双暴是核心；防御类为废词条。" };
+    }
+    return { title:"龙彻虚弱/通用流", core:["生命加成","虚弱增伤"], good:["生命","攻击加成"], ok:["暴击","誓约增伤","攻击"], low:["暴伤"], waste:["防御","防御加成"], note:"生命加成与虚弱增伤是核心；防御类为废词条。" };
+  }
+  if(id==="qin_plunderer"){
+    if(build==="双暴流"){
+      return { title:"掠心双暴流", core:["攻击加成","暴击","暴伤"], good:["攻击"], ok:["虚弱增伤","誓约增伤"], low:[], waste:["生命","生命加成","防御","防御加成"], note:"攻击加成与双暴是核心；生命/防御类为废词条。" };
+    }
+    return { title:"掠心虚弱/通用流", core:["攻击加成","虚弱增伤"], good:["攻击"], ok:["誓约增伤","暴击","暴伤"], low:[], waste:["生命","生命加成","防御","防御加成"], note:"攻击加成与虚弱增伤是核心；生命/防御类为废词条。" };
   }
 }
 
@@ -566,7 +653,6 @@ function buildSubBox(){
     div.className="chip";
 
     const isPercent = percentStats.includes(s);
-    // 🌟 占位符更新：现在所有属性都能自动评价了！
     const placeholderText = isPercent ? "数值%(自动评价)" : "数值(自动评价)";
     
     let valueInputHTML;
@@ -617,7 +703,6 @@ function toggleChip(input){
   }
 }
 
-// --- OCR 核心逻辑 ---
 async function handleImageUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -629,8 +714,8 @@ async function handleImageUpload(event) {
   const statusDiv = document.getElementById('ocrStatus');
   statusDiv.style.display = 'block';
   statusDiv.innerHTML = '⏳ 正在准备 AI 识别...<br><span style="font-size:12px;color:#666;">(初次使用需下载语言包，可能需要半分钟，请耐心等待)</span>';
-  statusDiv.style.background = '#d8ecff';
-  statusDiv.style.color = '#102a43';
+  statusDiv.style.background = 'var(--light-blue)';
+  statusDiv.style.color = 'var(--blue2)';
 
   try {
     const result = await Tesseract.recognize(file, 'chi_sim', {
@@ -697,7 +782,6 @@ async function handleImageUpload(event) {
     event.target.value = '';
   }
 }
-// --- OCR 逻辑结束 ---
 
 function selectedSubs(){
   return [...document.querySelectorAll("#subBox input[type=checkbox]:checked")].map(i=>i.value);
@@ -742,25 +826,27 @@ function mainScore(){
   const ghostMode=val("ghostMode");
   const time=val("battleTime");
 
+  if(id.startsWith("shen_") || id.startsWith("li_") || id.startsWith("qi_")) return {score:0, txt:"数据待更新，主属性暂不评分。"};
+
   if(pos==="α"){
     let s=10,t="α 是日卡左芯核，主属性固定生命，主要看副属性。";
-    if(id==="ghost"){s+=8;t+=" 鬼王吃生命，α 更友好。";}
+    if(id==="ghost" || id==="qin_dragon"){s+=8;t+=" 该身份吃生命，α 更友好。";}
     return {score:s,txt:t};
   }
 
   if(pos==="γ"){
     let s=10,t="γ 是月卡左芯核，主属性固定攻击，主要看副属性。";
-    if(id==="x02"){s+=8;t+=" 哥达吃攻击，γ 更友好。";}
+    if(id==="x02" || id==="qin_plunderer"){s+=8;t+=" 该身份吃攻击，γ 更友好。";}
     return {score:s,txt:t};
   }
 
   if(pos==="β"){
     let rec=[],txt="";
+    // 夏以昼
     if(id==="captain"){
       rec=["誓约增伤","防御加成","誓约回能"];
       txt="执舰官 β 位通常看誓约增伤/防御加成/回能。远空不需要额外加速回能。";
     }
-
     if(id==="ghost"){
       if(ghostMode==="不开共鸣"){
         rec=["生命加成","誓约增伤"];
@@ -773,10 +859,28 @@ function mainScore(){
         txt="鬼王 β 位随阶数变化，满阶不推荐回能，低阶可带回能。";
       }
     }
-
     if(id==="x02"){
       rec=build==="双暴流"?["誓约增伤","誓约回能","攻击加成"]:["誓约增伤","攻击加成","誓约回能"];
       txt="哥达 β 位通常看誓约增伤/攻击加成，双暴流可参考誓约回能。";
+    }
+    // 秦彻
+    if(id==="qin_demon"){
+      if(rank.startsWith("双0")) rec=["誓约回能","加速回能"];
+      else if(rank.startsWith("双1")) rec=["加速回能","防御加成"];
+      else rec=["防御加成"];
+      txt="恶魔彻 β 位随阶数变化，0阶需回能，高阶转防御加成。";
+    }
+    if(id==="qin_dragon"){
+      if(rank.startsWith("双0")) rec=["誓约回能","加速回能"];
+      else if(rank.startsWith("双1")) rec=["加速回能"];
+      else rec=["加速回能","生命加成"];
+      txt="龙彻 β 位随阶数变化，低阶极缺回能，高阶可补生命加成。";
+    }
+    if(id==="qin_plunderer"){
+      if(rank.startsWith("双0")) rec=["誓约回能","加速回能"];
+      else if(rank.startsWith("双1")) rec=["加速回能"];
+      else rec=["加速回能","攻击加成"];
+      txt="掠心 β 位随阶数变化，低阶极缺回能，高阶可补攻击加成。";
     }
 
     if(main===rec[0])return {score:30,txt:`β 主属性「${main}」命中当前第一推荐。${txt}`};
@@ -786,34 +890,31 @@ function mainScore(){
 
   if(pos==="δ"){
     let rec=[],txt="";
+    // 夏以昼
     if(id==="captain"){
-      if(build==="双暴流"){
-        rec=["暴击","暴伤","防御加成","虚弱增伤"];
-        txt="执舰官双暴流 δ 位优先暴击/暴伤。";
-      }else{
-        rec=["虚弱增伤","防御加成","暴击","暴伤"];
-        txt="执舰官虚弱流 δ 位优先虚弱增伤，其次防御加成。";
-      }
+      rec = build==="双暴流" ? ["暴击","暴伤","防御加成","虚弱增伤"] : ["虚弱增伤","防御加成","暴击","暴伤"];
+      txt = build==="双暴流" ? "执舰官双暴流 δ 位优先暴击/暴伤。" : "执舰官虚弱流 δ 位优先虚弱增伤，其次防御加成。";
     }
-
     if(id==="ghost"){
-      if(build==="双暴流"){
-        rec=["暴击","暴伤","生命加成","虚弱增伤"];
-        txt="鬼王双暴流 δ 位优先暴击/暴伤，其次生命加成。";
-      }else{
-        rec=["虚弱增伤","生命加成","暴击","暴伤"];
-        txt="鬼王虚弱流 δ 位优先虚弱增伤，生命加成也可用。";
-      }
+      rec = build==="双暴流" ? ["暴击","暴伤","生命加成","虚弱增伤"] : ["虚弱增伤","生命加成","暴击","暴伤"];
+      txt = build==="双暴流" ? "鬼王双暴流 δ 位优先暴击/暴伤，其次生命加成。" : "鬼王虚弱流 δ 位优先虚弱增伤，生命加成也可用。";
     }
-
     if(id==="x02"){
-      if(build==="双暴流"){
-        rec=["暴击","暴伤","攻击加成","虚弱增伤"];
-        txt="哥达双暴流 δ 位优先暴击/暴伤/攻击加成。";
-      }else{
-        rec=["虚弱增伤","攻击加成","暴击","暴伤"];
-        txt="哥达虚弱流 δ 位优先虚弱增伤，其次攻击加成。";
-      }
+      rec = build==="双暴流" ? ["暴击","暴伤","攻击加成","虚弱增伤"] : ["虚弱增伤","攻击加成","暴击","暴伤"];
+      txt = build==="双暴流" ? "哥达双暴流 δ 位优先暴击/暴伤/攻击加成。" : "哥达虚弱流 δ 位优先虚弱增伤，其次攻击加成。";
+    }
+    // 秦彻
+    if(id==="qin_demon"){
+      rec = build==="双暴流" ? ["暴击","暴伤"] : ["虚弱增伤","防御加成"];
+      txt = build==="双暴流" ? "恶魔彻双暴流 δ 位优先暴击/暴伤。" : "恶魔彻虚弱流 δ 位优先虚弱增伤。";
+    }
+    if(id==="qin_dragon"){
+      rec = build==="双暴流" ? ["暴击","暴伤"] : ["虚弱增伤","生命加成"];
+      txt = build==="双暴流" ? "龙彻双暴流 δ 位优先暴击/暴伤。" : "龙彻虚弱流 δ 位优先虚弱增伤。";
+    }
+    if(id==="qin_plunderer"){
+      rec = build==="双暴流" ? ["暴击","暴伤"] : ["虚弱增伤","攻击加成"];
+      txt = build==="双暴流" ? "掠心双暴流 δ 位优先暴击/暴伤。" : "掠心虚弱流 δ 位优先虚弱增伤。";
     }
 
     if(main===rec[0])return {score:32,txt:`δ 主属性「${main}」命中当前第一推荐。${txt}`};
@@ -822,18 +923,15 @@ function mainScore(){
   }
 }
 
-// 🌟 全新黑科技：基于强化次数的动态数值评价
 function judgeValueQuality(statName, value, hits) {
   if (!value) return null;
   const data = statData[statName];
   if (!data) return null;
 
-  // 计算该词条在当前强化次数下的理论最大值和最小值
   const maxVal = data.bMax + hits * data.uMax;
   const minVal = data.bMin + hits * data.uMin;
   const range = maxVal - minVal;
 
-  // 动态评级：接近理论上限为传家宝，高于平均为优秀，低于平均下限为偏低
   if (value >= maxVal - range * 0.15) return { q: "传家宝", s: 8 };
   if (value >= maxVal - range * 0.5) return { q: "优秀", s: 5 };
   if (value < minVal + range * 0.2) return { q: "偏低", s: -2 };
@@ -885,7 +983,6 @@ function judge(){
     let reasonTxt=`副属性「${s}」：${t.name}，${t.txt}，基础 ${t.score>=0?"+":""}${t.score}${h?`；强化 ${h} 次`:""}`;
     if (isNewbieBoost) reasonTxt += ` (新手期固定值收益提升)`;
 
-    // 🌟 传入强化次数 h，而不是总等级 level
     const vq=judgeValueQuality(s, values[s], h);
     if(vq){
       score+=vq.s;
@@ -899,7 +996,7 @@ function judge(){
     reasons.push(`有效副词条达到 ${good} 条，胚子质量较好：+10`);
   }else if(good===2){
     score+=5;
-    reasons.push("有效副词条 2 条，可小赌观察：+5");
+    reasons.push("有效副词条 2 条，可小升观察：+5");
   }
 
   if(waste>=2){
@@ -918,7 +1015,7 @@ function judge(){
 
   let gamble=gambleAdvice({p,b,subs,hits,good,waste,coreHits,goodHits,wasteHits,level});
   gamble=adjustGambleByLevel(gamble,level);
-  reasons.push(`🎲 赌核判断：${gamble.short}。${gamble.text}`);
+  reasons.push(`🎲 强化判断：${gamble.short}。${gamble.text}`);
 
   score=Math.max(0,Math.min(100,Math.round(score)));
   const rankObj=getRank(score);
@@ -928,12 +1025,12 @@ function judge(){
 function adjustGambleByLevel(gamble,level){
   const isStop=gamble.short.includes("停手")||gamble.short.includes("不建议")||gamble.short.includes("谨慎停手")||gamble.short.includes("暂停观察");
   const isLock=gamble.short.includes("上锁");
-  const isGood=gamble.short.includes("好赌")||gamble.short.includes("上锁");
+  const isGood=gamble.short.includes("好升")||gamble.short.includes("上锁");
 
   if(level>=15){
-    if(isLock||isGood)return {...gamble,can:"已满级",level:"无需再赌",how:"已经 +15，不能继续强化。若评分和词条都不错，建议上锁保留。",text:"当前芯核已经满级，不能继续赌；若整体表现优秀，建议保留或上锁。"};
-    if(isStop)return {...gamble,can:"已满级",level:"赌完了",how:"已经 +15，不能继续强化。若结果不理想，建议作为过渡，有更好芯核后替换。",text:"当前芯核已经满级且结果不理想，后续只能考虑过渡、替换或分解。"};
-    return {...gamble,can:"已满级",level:"无法再赌",how:"已经 +15，不能继续强化。请根据评分决定保留、过渡或替换。",text:"当前芯核已经满级，工具只判断成品质量，不再给继续强化建议。"};
+    if(isLock||isGood)return {...gamble,can:"已满级",level:"无需再升",how:"已经 +15，不能继续强化。若评分和词条都不错，建议上锁保留。",text:"当前芯核已经满级，不能继续强化；若整体表现优秀，建议保留或上锁。"};
+    if(isStop)return {...gamble,can:"已满级",level:"升完了",how:"已经 +15，不能继续强化。若结果不理想，建议作为过渡，有更好芯核后替换。",text:"当前芯核已经满级且结果不理想，后续只能考虑过渡、替换或分解。"};
+    return {...gamble,can:"已满级",level:"无法再升",how:"已经 +15，不能继续强化。请根据评分决定保留、过渡或替换。",text:"当前芯核已经满级，工具只判断成品质量，不再给继续强化建议。"};
   }
 
   if(level===12){
@@ -950,18 +1047,18 @@ function adjustGambleByLevel(gamble,level){
 
   if(level===6){
     if(isStop)return {...gamble,how:"当前 +6，如果已经歪到废词条，建议停手，不要继续到 +9。",text:"当前 +6 已出现明显风险，建议及时止损。"};
-    return {...gamble,how:"当前 +6，可以考虑赌到 +9；如果 +9 歪废词条就停。",text:"当前 +6，仍可观察到 +9。"};
+    return {...gamble,how:"当前 +6，可以考虑升到 +9；如果 +9 歪废词条就停。",text:"当前 +6，仍可观察到 +9。"};
   }
 
   if(level===3){
     if(isStop)return {...gamble,how:"当前 +3 如果已经歪得明显，建议停手，不要继续喂资源。",text:"当前 +3 已出现风险，建议谨慎。"};
-    return {...gamble,how:"当前 +3，可以继续到 +6 看第二跳是否命中核心。",text:"当前 +3，可继续小赌到 +6。"};
+    return {...gamble,how:"当前 +3，可以继续到 +6 看第二跳是否命中核心。",text:"当前 +3，可继续小升到 +6。"};
   }
 
   if(level===0){
-    if(isStop)return {...gamble,how:"当前 +0 底子已经不太理想，不建议开赌。",text:"当前为 +0 胚子，但底子偏差，不建议投入资源。"};
-    if(isGood)return {...gamble,how:"当前 +0 底子不错，可以先赌到 +3/+6 看是否命中核心词条。",text:"当前为 +0 好胚子，可以先小赌。"};
-    return {...gamble,how:"当前 +0，可以先赌到 +3；如果没出有效词条就停。",text:"当前为 +0 胚子，建议小赌观察。"};
+    if(isStop)return {...gamble,how:"当前 +0 底子已经不太理想，不建议强化。",text:"当前为 +0 胚子，但底子偏差，不建议投入资源。"};
+    if(isGood)return {...gamble,how:"当前 +0 底子不错，可以先升到 +3/+6 看是否命中核心词条。",text:"当前为 +0 好胚子，可以先小升。"};
+    return {...gamble,how:"当前 +0，可以先升到 +3；如果没出有效词条就停。",text:"当前为 +0 胚子，建议小升观察。"};
   }
 
   return gamble;
@@ -973,57 +1070,96 @@ function gambleAdvice(ctx){
   const level=ctx.level;
   const hits=ctx.hits;
 
+  if(id.startsWith("shen_") || id.startsWith("li_") || id.startsWith("qi_")) return {short:"⚠️ 暂无建议",can:"未知",level:"未知",how:"数据待更新，暂无强化建议。",text:"等待攻略组授权中..."};
+
+  // 夏以昼
   if(id==="captain"){
     const defHits=hits["防御"]||0;
     const coreHits=(hits["防御加成"]||0)+(hits["虚弱增伤"]||0);
     const lifeHits=(hits["生命"]||0)+(hits["生命加成"]||0);
 
-    if(lifeHits>0)return {short:"🛑 谨慎停手",can:"不太建议",level:"偏难赌",how:"生命/生命加成偏废，强化打到这类建议停手。",text:"执舰官中生命/生命加成偏废，强化打到这类词条建议停手。"};
-    if(defHits>=2)return {short:"⚠️ 暂停观察",can:"能用",level:"一般赌",how:"固定防御已强化较多，建议暂停等更好胚子。",text:"固定防御被强化到 2 次左右，建议暂停升级。"};
-    if(coreHits>=2)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"可继续冲 +12/+15，优先看防御加成/虚弱增伤。",text:"强化命中防御加成/虚弱增伤核心词条，属于好胚子。"};
-    if(ctx.good>=3)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"先到 +9，若不打核心词条就停。",text:"副词条底子好，建议赌到 +6/+9。"};
-    return {short:"🎲 小赌",can:"能赌",level:"小赌",how:"先到 +3/+6，没打到防御加成/虚弱增伤就停。",text:"可小赌到 +3/+6。"};
+    if(lifeHits>0)return {short:"🛑 谨慎停手",can:"不太建议",level:"偏难升",how:"生命/生命加成偏废，强化打到这类建议停手。",text:"执舰官中生命/生命加成偏废，强化打到这类词条建议停手。"};
+    if(defHits>=2)return {short:"⚠️ 暂停观察",can:"能用",level:"一般升",how:"固定防御已强化较多，建议暂停等更好胚子。",text:"固定防御被强化到 2 次左右，建议暂停升级。"};
+    if(coreHits>=2)return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"可继续冲 +12/+15，优先看防御加成/虚弱增伤。",text:"强化命中防御加成/虚弱增伤核心词条，属于好胚子。"};
+    if(ctx.good>=3)return {short:"🎲 好升",can:"能升",level:"好升",how:"先到 +9，若不打核心词条就停。",text:"副词条底子好，建议升到 +6/+9。"};
+    return {short:"🎲 小升",can:"能升",level:"小升",how:"先到 +3/+6，没打到防御加成/虚弱增伤就停。",text:"可小升到 +3/+6。"};
   }
 
   if(id==="ghost" && build==="双暴流"){
     const critHits=(hits["暴击"]||0)+(hits["暴伤"]||0);
     const hpPctHits=hits["生命加成"]||0;
 
-    if(critHits>=3)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，命中双暴核心。",text:"鬼王双暴流强化明显命中暴击/暴伤，值得继续培养。"};
-    if(critHits>=1 && hpPctHits>=1)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可继续到 +9/+12，优先双暴。",text:"双暴和生命加成都有命中，可以继续赌。"};
-    if(ctx.wasteHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"多次歪防御类，建议止损。",text:"强化多次打到防御类废词条，建议止损。"};
-    return {short:"⚠️ 谨慎赌",can:"能赌",level:"谨慎赌",how:"下一次最好命中暴击/暴伤，否则停。",text:"鬼王双暴流最好强化到暴击/暴伤。"};
+    if(critHits>=3)return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"继续培养，命中双暴核心。",text:"鬼王双暴流强化明显命中暴击/暴伤，值得继续培养。"};
+    if(critHits>=1 && hpPctHits>=1)return {short:"🎲 好升",can:"能升",level:"好升",how:"可继续到 +9/+12，优先双暴。",text:"双暴和生命加成都有命中，可以继续升。"};
+    if(ctx.wasteHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好升",how:"多次歪防御类，建议止损。",text:"强化多次打到防御类废词条，建议止损。"};
+    return {short:"⚠️ 谨慎升",can:"能升",level:"谨慎升",how:"下一次最好命中暴击/暴伤，否则停。",text:"鬼王双暴流最好强化到暴击/暴伤。"};
   }
 
   if(id==="ghost"){
     const hpPctHits=hits["生命加成"]||0;
     const badHits=(hits["防御"]||0)+(hits["防御加成"]||0);
 
-    if(hpPctHits>=3)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，生命加成命中很多次。",text:"鬼王虚弱流生命加成命中多次，属于很好结果。"};
-    if(hpPctHits>=1 && ctx.goodHits>=2)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可继续观察到 +9/+12。",text:"命中生命加成且有效词条强化不错。"};
-    if(badHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"多次歪防御类，建议止损。",text:"鬼王不喜欢防御类词条，多次歪到防御建议止损。"};
-    return {short:"🎲 小赌",can:"能赌",level:"小赌",how:"可到 +6/+9，核心目标是生命加成。",text:"可赌到 +6/+9，核心目标是生命加成。"};
+    if(hpPctHits>=3)return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"继续培养，生命加成命中很多次。",text:"鬼王虚弱流生命加成命中多次，属于很好结果。"};
+    if(hpPctHits>=1 && ctx.goodHits>=2)return {short:"🎲 好升",can:"能升",level:"好升",how:"可继续观察到 +9/+12。",text:"命中生命加成且有效词条强化不错。"};
+    if(badHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好升",how:"多次歪防御类，建议止损。",text:"鬼王不喜欢防御类词条，多次歪到防御建议止损。"};
+    return {short:"🎲 小升",can:"能升",level:"小升",how:"可到 +6/+9，核心目标是生命加成。",text:"可升到 +6/+9，核心目标是生命加成。"};
   }
 
   if(id==="x02" && build==="双暴流"){
     const coreHits=(hits["暴击"]||0)+(hits["暴伤"]||0)+(hits["攻击加成"]||0);
 
-    if(coreHits>=3)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，核心强化命中多次。",text:"哥达双暴流强化命中暴击/暴伤/攻击加成多次。"};
-    if(level>=6 && coreHits===0)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"+6 还没打到核心，建议停手。",text:"哥达双暴流强化没打到暴击/暴伤/攻击加成，建议停手。"};
-    if(coreHits>=1)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可继续到 +9，优先暴击/暴伤/攻击加成。",text:"已命中双暴/攻击加成核心词条。"};
-    return {short:"⚠️ 谨慎赌",can:"能赌",level:"谨慎赌",how:"下一次不命中核心就停。",text:"哥达双暴流要求强化命中暴击/暴伤/攻击加成。"};
+    if(coreHits>=3)return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"继续培养，核心强化命中多次。",text:"哥达双暴流强化命中暴击/暴伤/攻击加成多次。"};
+    if(level>=6 && coreHits===0)return {short:"🛑 停手",can:"不建议",level:"不好升",how:"+6 还没打到核心，建议停手。",text:"哥达双暴流强化没打到暴击/暴伤/攻击加成，建议停手。"};
+    if(coreHits>=1)return {short:"🎲 好升",can:"能升",level:"好升",how:"可继续到 +9，优先暴击/暴伤/攻击加成。",text:"已命中双暴/攻击加成核心词条。"};
+    return {short:"⚠️ 谨慎升",can:"能升",level:"谨慎升",how:"下一次不命中核心就停。",text:"哥达双暴流要求强化命中暴击/暴伤/攻击加成。"};
   }
 
   if(id==="x02"){
     const atkHits=(hits["攻击加成"]||0)+(hits["攻击"]||0);
 
-    if(atkHits>=2)return {short:"🔒 建议上锁",can:"能赌",level:"很好赌",how:"继续培养，攻击相关命中好。",text:"哥达攻击体系强化命中攻击相关词条。"};
-    if(ctx.wasteHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好赌",how:"多次歪生命/防御类，建议止损。",text:"多次歪到生命/防御类废词条，建议止损。"};
-    if(ctx.good>=3)return {short:"🎲 好赌",can:"能赌",level:"好赌",how:"可以赌到 +9 观察。",text:"底子不错，可以赌到 +9。"};
-    return {short:"🎲 小赌",can:"能赌",level:"小赌",how:"先到 +3/+6，看是否命中攻击加成/虚弱/誓约。",text:"可赌到 +3/+6。"};
+    if(atkHits>=2)return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"继续培养，攻击相关命中好。",text:"哥达攻击体系强化命中攻击相关词条。"};
+    if(ctx.wasteHits>=2)return {short:"🛑 停手",can:"不建议",level:"不好升",how:"多次歪生命/防御类，建议止损。",text:"多次歪到生命/防御类废词条，建议止损。"};
+    if(ctx.good>=3)return {short:"🎲 好升",can:"能升",level:"好升",how:"可以升到 +9 观察。",text:"底子不错，可以升到 +9。"};
+    return {short:"🎲 小升",can:"能升",level:"小升",how:"先到 +3/+6，看是否命中攻击加成/虚弱/誓约。",text:"可小升到 +3/+6。"};
   }
 
-  return {short:"⚠️ 谨慎赌",can:"看情况",level:"谨慎赌",how:"规则未覆盖，建议人工判断。",text:"规则未完全覆盖。"};
+  // 秦彻 - 恶魔彻 (Def)
+  if(id==="qin_demon"){
+    const wasteHits=(hits["生命"]||0)+(hits["生命加成"]||0);
+    const coreHits = build==="双暴流" ? (hits["防御加成"]||0)+(hits["暴击"]||0)+(hits["暴伤"]||0) : (hits["防御加成"]||0)+(hits["虚弱增伤"]||0);
+    
+    if(wasteHits>=2) return {short:"🛑 停手",can:"不建议",level:"不好升",how:"多次歪生命类废词条，建议止损。",text:"恶魔彻不需要生命，多次歪到生命类建议止损。"};
+    if(coreHits>=3) return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"继续培养，核心强化命中多次。",text:"恶魔彻核心词条命中多次，属于极品胚子。"};
+    if(coreHits>=1 && ctx.goodHits>=1) return {short:"🎲 好升",can:"能升",level:"好升",how:"可继续升到 +9/+12 观察。",text:"核心与有效词条均有命中，可以继续强化。"};
+    if(ctx.good>=3) return {short:"🎲 好升",can:"能升",level:"好升",how:"底子不错，可以升到 +9 观察。",text:"初始有效词条多，值得强化观察。"};
+    return {short:"🎲 小升",can:"能升",level:"小升",how:"先到 +3/+6，看是否命中核心词条。",text:"可小升到 +3/+6 观察走向。"};
+  }
+
+  // 秦彻 - 龙彻 (HP)
+  if(id==="qin_dragon"){
+    const wasteHits=(hits["防御"]||0)+(hits["防御加成"]||0)+(hits["攻击"]||0)+(hits["攻击加成"]||0);
+    const coreHits = build==="双暴流" ? (hits["生命加成"]||0)+(hits["暴击"]||0)+(hits["暴伤"]||0) : (hits["生命加成"]||0)+(hits["虚弱增伤"]||0);
+    
+    if(wasteHits>=2) return {short:"🛑 停手",can:"不建议",level:"不好升",how:"多次歪攻防类废词条，建议止损。",text:"龙彻不需要攻防，多次歪到废词条建议止损。"};
+    if(coreHits>=3) return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"继续培养，核心强化命中多次。",text:"龙彻核心词条命中多次，属于极品胚子。"};
+    if(coreHits>=1 && ctx.goodHits>=1) return {short:"🎲 好升",can:"能升",level:"好升",how:"可继续升到 +9/+12 观察。",text:"核心与有效词条均有命中，可以继续强化。"};
+    if(ctx.good>=3) return {short:"🎲 好升",can:"能升",level:"好升",how:"底子不错，可以升到 +9 观察。",text:"初始有效词条多，值得强化观察。"};
+    return {short:"🎲 小升",can:"能升",level:"小升",how:"先到 +3/+6，看是否命中核心词条。",text:"可小升到 +3/+6 观察走向。"};
+  }
+
+  // 秦彻 - 掠心 (Atk)
+  if(id==="qin_plunderer"){
+    const wasteHits=(hits["生命"]||0)+(hits["生命加成"]||0)+(hits["防御"]||0)+(hits["防御加成"]||0);
+    const coreHits = build==="双暴流" ? (hits["攻击加成"]||0)+(hits["暴击"]||0)+(hits["暴伤"]||0) : (hits["攻击加成"]||0)+(hits["虚弱增伤"]||0);
+    
+    if(wasteHits>=2) return {short:"🛑 停手",can:"不建议",level:"不好升",how:"多次歪生命/防御类废词条，建议止损。",text:"掠心不需要生命和防御，多次歪到废词条建议止损。"};
+    if(coreHits>=3) return {short:"🔒 建议上锁",can:"能升",level:"很好升",how:"继续培养，核心强化命中多次。",text:"掠心核心词条命中多次，属于极品胚子。"};
+    if(coreHits>=1 && ctx.goodHits>=1) return {short:"🎲 好升",can:"能升",level:"好升",how:"可继续升到 +9/+12 观察。",text:"核心与有效词条均有命中，可以继续强化。"};
+    if(ctx.good>=3) return {short:"🎲 好升",can:"能升",level:"好升",how:"底子不错，可以升到 +9 观察。",text:"初始有效词条多，值得强化观察。"};
+    return {short:"🎲 小升",can:"能升",level:"小升",how:"先到 +3/+6，看是否命中核心词条。",text:"可小升到 +3/+6 观察走向。"};
+  }
+
+  return {short:"⚠️ 谨慎升",can:"看情况",level:"谨慎升",how:"规则未覆盖，建议人工判断。",text:"规则未完全覆盖。"};
 }
 
 function getRank(score){
@@ -1043,12 +1179,12 @@ function render(score,rankObj,reasons,gamble,info){
   rt.textContent=rankObj.rank;
   rt.className=`rank ${rankObj.cls}`;
 
-  document.getElementById("descText").textContent=`${rankObj.desc}｜赌核：${gamble.short}`;
+  document.getElementById("descText").textContent=`${rankObj.desc}｜建议：${gamble.short}`;
 
   document.getElementById("quickBox").innerHTML=`
-    <strong>能赌吗：</strong>${gamble.can}<br>
-    <strong>好赌吗：</strong>${gamble.level}<br>
-    <strong>怎么赌：</strong>${gamble.how}
+    <strong>能升吗：</strong>${gamble.can}<br>
+    <strong>好升吗：</strong>${gamble.level}<br>
+    <strong>怎么升：</strong>${gamble.how}
   `;
 
   const ul=document.getElementById("reasons");
@@ -1075,15 +1211,15 @@ function subText(info){
 
 function shortText(score,rankObj,gamble,info){
   return `【结论】${gamble.short}。
-适配判断：夏以昼-${info.b.name}，${currentCardType()}${val("position")}位，${val("buildType")}。
-能赌吗：${gamble.can}；好赌吗：${gamble.level}。
-怎么赌：${gamble.how}`;
+适配判断：${val("boy")}-${info.b.name}，${currentCardType()}${val("position")}位，${val("buildType")}。
+能升吗：${gamble.can}；好升吗：${gamble.level}。
+怎么升：${gamble.how}`;
 }
 
 function detailText(score,rankObj,gamble,info,reasons){
   return `【评分细则】
 
-搭档：夏以昼
+搭档：${val("boy")}
 当前使用身份：${info.b.name} / ${info.b.alias}
 芯核类型：${currentCardType()}
 位置：${val("position")}
@@ -1099,11 +1235,11 @@ function detailText(score,rankObj,gamble,info,reasons){
 
 基础评级：${rankObj.rank}
 评分：${score}/100
-赌核评级：${gamble.short}
+强化评级：${gamble.short}
 
-能赌吗：${gamble.can}
-好赌吗：${gamble.level}
-怎么赌：${gamble.how}
+能升吗：${gamble.can}
+好升吗：${gamble.level}
+怎么升：${gamble.how}
 
 理由：
 ${reasons.slice(0,10).map((r,i)=>`${i+1}. ${r.replace(/<[^>]*>?/gm, '')}`).join("\n")}
@@ -1112,7 +1248,9 @@ ${reasons.slice(0,10).map((r,i)=>`${i+1}. ${r.replace(/<[^>]*>?/gm, '')}`).join(
 }
 
 function resetAll(){
-  document.querySelectorAll("select").forEach(s=>s.selectedIndex=0);
+  document.querySelectorAll("select").forEach(s=>{
+    if(s.id !== "boy") s.selectedIndex=0;
+  });
   document.querySelectorAll("#subBox input").forEach(i=>{
     i.checked=false;
     toggleChip(i);
@@ -1124,7 +1262,7 @@ function resetAll(){
   rt.textContent="等待判断";
   rt.className="rank";
   document.getElementById("descText").textContent="请选择信息后点击「开始判断」。";
-  document.getElementById("quickBox").innerHTML="能赌吗：--<br>好赌吗：--<br>怎么赌：--";
+  document.getElementById("quickBox").innerHTML="能升吗：--<br>好升吗：--<br>怎么升：--";
   document.getElementById("reasons").innerHTML="";
   document.getElementById("shortShare").value="";
   document.getElementById("detailShare").value="";
